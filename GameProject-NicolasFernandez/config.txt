@@ -1,0 +1,7 @@
+# Game Config
+
+Window 1280 720
+
+Font    Arial      	../assets/fonts/arial.ttf
+Font    main       	../assets/fonts/Sansation.ttf
+Font    Arcade    	../assets/fonts/arcadeclassic.regular.ttf
