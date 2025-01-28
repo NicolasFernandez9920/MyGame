@@ -149,6 +149,7 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Scene_Game.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Utilities.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Scene_Game.h" />
     <ClInclude Include="Scene_Menu.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>

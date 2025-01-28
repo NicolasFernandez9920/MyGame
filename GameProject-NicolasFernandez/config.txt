@@ -5,3 +5,9 @@ Window 1280 720
 Font    Arial      	../assets/fonts/arial.ttf
 Font    main       	../assets/fonts/Sansation.ttf
 Font    Arcade    	../assets/fonts/arcadeclassic.regular.ttf
+
+# Textures
+Texture city            ../assets/textures/retrowave.png
+
+# Sprites
+Sprite background       city   1   1   1920   1080
