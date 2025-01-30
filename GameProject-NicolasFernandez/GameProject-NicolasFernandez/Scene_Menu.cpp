@@ -101,11 +101,11 @@ void Scene_Menu::sDoAction(const Command& action)
 		}
 		else if (action.name() == "PLAY")
 		{
-			std::cout << "Opening scene game...\n";
+			std::cout << "Opening Scene_game...\n";
 
 			_game->changeScene("PLAY", std::make_shared<Scene_Game>(_game, m_levelPaths[m_menuIndex]));
 
-			std::cout << "Scene game opened succesfully.\n";
+			std::cout << "Scene_game opened succesfully.\n";
 		}
 		else if (action.name() == "QUIT")
 		{

@@ -6,7 +6,7 @@
 #include "Assets.h"
 //#include "SoundPlayer.h"
 #include "GameEngine.h"
-//#include "Entity.h"
+
 
 #include <random>
 #include <fstream>
@@ -16,12 +16,20 @@ Scene_Game::Scene_Game(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine)
 	, _worldView(gameEngine->window().getDefaultView())
 {
+	std::cout << "Scene_Game constructor initialized\n";
+
 	init(levelPath);
+
+	std::cout << "Scene_Game constructor done.\n";
 }
 
 void Scene_Game::init(const std::string& levelPath)
 {
+	std::cout << "Initialazing level path " << levelPath << "\n";
+
 	loadLevel(levelPath);
+
+	std::cout << "initialized correctly\n";
 }
 
 void Scene_Game::sUpdate(sf::Time dt)
@@ -69,7 +77,7 @@ void Scene_Game::loadLevel(const std::string& path)
 		//else if (token == "PlayerSpeed") {
 		//	config >> _config.playerSpeed;
 		//}
-		//config >> token;
+		config >> token;
 	}
 
 	config.close();
