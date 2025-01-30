@@ -8,6 +8,7 @@ class Scene_Game : public Scene
 {
 	sPtrEntt                        _player{ nullptr };
 	sf::View                        _worldView;
+	sf::FloatRect                   _worldBounds;
 	float                           _gridCellSize{ 40.f };
 
 	bool                            _drawTextures{ true };
@@ -15,11 +16,12 @@ class Scene_Game : public Scene
 	bool                            _drawGrid{ false };
 
 	//systems
-
+	void                    sUpdate(sf::Time dt);
+	void	                onEnd() override;
 
 	//helper functions
 	void                    spawnPlayer(sf::Vector2f pos);
-	void                    init(const std::string& path);
+	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);
 
 public:

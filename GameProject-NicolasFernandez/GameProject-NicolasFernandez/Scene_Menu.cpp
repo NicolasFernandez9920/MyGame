@@ -1,6 +1,8 @@
 #include "Scene_Menu.h"
+#include "Scene_Game.h"
 //#include "MusicPlayer.h"
 #include <memory>
+#include <iostream>
 
 void Scene_Menu::onEnd()
 {
@@ -32,9 +34,9 @@ void Scene_Menu::init()
 	m_menuStrings.push_back("Level 2");
 	m_menuStrings.push_back("Level 3");
 
-	m_levelPaths.push_back("../level1.txt");
-	m_levelPaths.push_back("../level1.txt");
-	m_levelPaths.push_back("../level1.txt");
+	m_levelPaths.push_back("../level.txt");
+	m_levelPaths.push_back("../level.txt");
+	m_levelPaths.push_back("../level.txt");
 
 	m_menuText.setFont(Assets::getInstance().getFont("Arcade"));
 
@@ -99,7 +101,11 @@ void Scene_Menu::sDoAction(const Command& action)
 		}
 		else if (action.name() == "PLAY")
 		{
-			//_game->changeScene("PLAY", std::make_shared<>(_game, m_levelPaths[m_menuIndex]));
+			std::cout << "Opening scene game...\n";
+
+			_game->changeScene("PLAY", std::make_shared<Scene_Game>(_game, m_levelPaths[m_menuIndex]));
+
+			std::cout << "Scene game opened succesfully.\n";
 		}
 		else if (action.name() == "QUIT")
 		{
