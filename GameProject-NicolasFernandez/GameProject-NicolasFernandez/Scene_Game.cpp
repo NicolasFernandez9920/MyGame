@@ -30,10 +30,17 @@ void Scene_Game::init(const std::string& levelPath)
 	loadLevel(levelPath);
 
 	std::cout << "initialized correctly\n";
+
+	sf::Vector2f view{ _worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f };
+
+	_worldView.setCenter(view);
+
+
 }
 
 void Scene_Game::sUpdate(sf::Time dt)
 {
+	_entityManager.update();
 }
 
 void Scene_Game::onEnd()
@@ -63,11 +70,20 @@ void Scene_Game::loadLevel(const std::string& path)
 			std::string name;
 			sf::Vector2f pos;
 			config >> name >> pos.x >> pos.y;
+
+			std::cout << "Loading background: " << name << " at position (" << pos.x << ", " << pos.y << ")\n";
+
 			auto e = _entityManager.addEntity("bkg");
 
 			// for background, no textureRect its just the whole texture
 			// and no center origin, position by top left corner
 			auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			if (!sprite.getTexture()) {
+				std::cout << "Texture: " << name << " failed loading\n";
+			}
+			else {
+				std::cout << "Texture: " << name << " loaded correctly\n";
+			}
 			sprite.setOrigin(0.f, 0.f);
 			sprite.setPosition(pos);
 		}
@@ -86,7 +102,7 @@ void Scene_Game::loadLevel(const std::string& path)
 
 void Scene_Game::update(sf::Time dt)
 {
-
+	sUpdate(dt);
 }
 
 void Scene_Game::sDoAction(const Command& command)

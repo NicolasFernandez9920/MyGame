@@ -147,32 +147,32 @@ void Assets::loadTextures(const std::string& path)
     confFile.close();
 }
 
-void Assets::loadSounds(const std::string& path)
-{
-    std::ifstream confFile(path);
-    if (confFile.fail()) {
-        std::cerr << "Open file " << path << " failed\n";
-        confFile.close();
-        exit(1);
-    }
-
-    std::string token{ "" };
-    confFile >> token;
-    while (confFile) {
-        if (token == "Sound") {
-            std::string name, path;
-            confFile >> name >> path;
-            addSound(name, path);
-        }
-        else {
-            // ignore rest of line and continue
-            std::string buffer;
-            std::getline(confFile, buffer);
-        }
-        confFile >> token;
-    }
-    confFile.close();
-}
+//void Assets::loadSounds(const std::string& path)
+//{
+//    std::ifstream confFile(path);
+//    if (confFile.fail()) {
+//        std::cerr << "Open file " << path << " failed\n";
+//        confFile.close();
+//        exit(1);
+//    }
+//
+//    std::string token{ "" };
+//    confFile >> token;
+//    while (confFile) {
+//        if (token == "Sound") {
+//            std::string name, path;
+//            confFile >> name >> path;
+//            addSound(name, path);
+//        }
+//        else {
+//            // ignore rest of line and continue
+//            std::string buffer;
+//            std::getline(confFile, buffer);
+//        }
+//        confFile >> token;
+//    }
+//    confFile.close();
+//}
 
 void Assets::loadSpriteRecs(const std::string& path)
 {

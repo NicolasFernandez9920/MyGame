@@ -64,7 +64,7 @@ void Scene_Menu::sRender()
 	static const sf::Color backgroundColor(100, 100, 255);
 
 	sf::Text footer("UP: W    DOWN: S   PLAY:D    QUIT: ESC",
-		Assets::getInstance().getFont("Arial"), 20);
+		Assets::getInstance().getFont("Arcade"), 20);
 	footer.setFillColor(normalColor);
 	footer.setPosition(32, 700);
 
