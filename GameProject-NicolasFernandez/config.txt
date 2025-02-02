@@ -8,6 +8,8 @@ Font    Arcade    	../assets/fonts/arcadeclassic.regular.ttf
 
 # Textures
 Texture city            ../assets/textures/retrowave.png
+Texture player          ../assets/textures/player.png
 
 # Sprites
-Sprite background       city   1   1   1920   1080
+Sprite background       city     1   1   1920   1080
+Sprite playerDT         player   0   0     32     50

@@ -25,16 +25,15 @@ Scene_Game::Scene_Game(GameEngine* gameEngine, const std::string& levelPath)
 
 void Scene_Game::init(const std::string& levelPath)
 {
-	std::cout << "Initialazing level path " << levelPath << "\n";
 
 	loadLevel(levelPath);
 
-	std::cout << "initialized correctly\n";
 
 	sf::Vector2f view{ _worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f };
 
 	_worldView.setCenter(view);
 
+	spawnPlayer(_worldView.getCenter());
 
 }
 
@@ -49,6 +48,18 @@ void Scene_Game::onEnd()
 
 void Scene_Game::spawnPlayer(sf::Vector2f pos)
 {
+	_player = _entityManager.addEntity("player");
+	_player->addComponent<CTransform>(pos);
+
+	auto& sr = Assets::getInstance().getSpriteRec("playerDT");
+	auto& sprite = _player->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+	sprite.setTextureRect(sr.texRect);
+	centerOrigin(sprite);
+
+	_player->addComponent<CBoundingBox>(sf::Vector2f{ 30.f, 30.f });
+	_player->addComponent<CState>("straight");
+	_player->addComponent<CInput>();
+	_player->addComponent<CPlayerState>();
 }
 
 
