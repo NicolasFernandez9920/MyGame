@@ -1,5 +1,5 @@
 # Level 
 
-World 1920 1080
+World 1280 720
 
 Bkg city  0  0

@@ -16,15 +16,14 @@ Scene_Game::Scene_Game(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine)
 	, _worldView(gameEngine->window().getDefaultView())
 {
-	std::cout << "Scene_Game constructor initialized\n";
 
 	init(levelPath);
 
-	std::cout << "Scene_Game constructor done.\n";
 }
 
 void Scene_Game::init(const std::string& levelPath)
 {
+	registerActions();
 
 	loadLevel(levelPath);
 
@@ -42,7 +41,15 @@ void Scene_Game::sUpdate(sf::Time dt)
 	_entityManager.update();
 }
 
+void Scene_Game::sMovement(sf::Time dt)
+{
+}
+
 void Scene_Game::onEnd()
+{
+}
+
+void Scene_Game::spawnTweet(sf::Vector2f dir)
 {
 }
 
@@ -60,6 +67,10 @@ void Scene_Game::spawnPlayer(sf::Vector2f pos)
 	_player->addComponent<CState>("straight");
 	_player->addComponent<CInput>();
 	_player->addComponent<CPlayerState>();
+}
+
+void Scene_Game::playerMovement()
+{
 }
 
 
@@ -110,6 +121,24 @@ void Scene_Game::loadLevel(const std::string& path)
 	config.close();
 }
 
+void Scene_Game::registerActions()
+{
+	registerAction(sf::Keyboard::P, "PAUSE");
+	registerAction(sf::Keyboard::Escape, "BACK");
+	registerAction(sf::Keyboard::Q, "QUIT");
+	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
+	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
+	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
+
+	registerAction(sf::Keyboard::A, "LEFT");
+	registerAction(sf::Keyboard::Left, "LEFT");
+	registerAction(sf::Keyboard::D, "RIGHT");
+	registerAction(sf::Keyboard::Right, "RIGHT");
+	registerAction(sf::Keyboard::W, "JUMP");
+	registerAction(sf::Keyboard::Up, "JUMP");
+	registerAction(sf::Keyboard::Space, "SHOOT");
+}
+
 
 void Scene_Game::update(sf::Time dt)
 {
@@ -118,6 +147,41 @@ void Scene_Game::update(sf::Time dt)
 
 void Scene_Game::sDoAction(const Command& command)
 {
+	// On Key Press
+	if (command.type() == "START") {
+		if (command.name() == "PAUSE") { setPaused(!_isPaused); }
+		else if (command.name() == "QUIT") { _game->quitLevel(); }
+
+		else if (command.name() == "TOGGLE_TEXTURE") { _drawTextures = !_drawTextures; }
+		else if (command.name() == "TOGGLE_COLLISION") { _drawAABB = !_drawAABB; }
+		else if (command.name() == "TOGGLE_GRID") { _drawGrid = !_drawGrid; }
+
+		// Player control
+		else if (command.name() == "LEFT") { _player->getComponent<CInput>().left = true; }
+		else if (command.name() == "RIGHT") { _player->getComponent<CInput>().right = true; }
+
+		else if (command.name() == "JUMP") {
+			if (_player->getComponent<CInput>().canJump) {
+				_player->getComponent<CInput>().up = true;
+				_player->getComponent<CInput>().canJump = false;
+			}
+		}
+		else if (command.name() == "SHOOT") {
+			if (_player->getComponent<CInput>().canShoot) {
+				_player->getComponent<CInput>().shoot = true;
+				_player->getComponent<CInput>().canShoot = false;
+			}
+		}
+	}
+
+	// on Key Release
+	else if (command.type() == "END") {
+		// Player control
+		if (command.name() == "LEFT") { _player->getComponent<CInput>().left = false; }
+		else if (command.name() == "RIGHT") { _player->getComponent<CInput>().right = false; }
+		else if (command.name() == "JUMP") { _player->getComponent<CInput>().up = false; }
+		else if (command.name() == "SHOOT") { _player->getComponent<CInput>().canShoot = true; }
+	}
 }
 
 void Scene_Game::sRender()

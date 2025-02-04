@@ -38,7 +38,7 @@ void Scene_Menu::init()
 	m_levelPaths.push_back("../level.txt");
 	m_levelPaths.push_back("../level.txt");
 
-	m_menuText.setFont(Assets::getInstance().getFont("Arcade"));
+	m_menuText.setFont(Assets::getInstance().getFont("megaman"));
 
 	const size_t CHAR_SIZE{ 64 };
 	m_menuText.setCharacterSize(CHAR_SIZE);
@@ -63,10 +63,10 @@ void Scene_Menu::sRender()
 
 	static const sf::Color backgroundColor(100, 100, 255);
 
-	sf::Text footer("UP: W    DOWN: S   PLAY:D    QUIT: ESC",
-		Assets::getInstance().getFont("Arcade"), 20);
+	sf::Text footer("UP: W    DOWN: S   PLAY: D    QUIT: ESC",
+		Assets::getInstance().getFont("megaman"), 20);
 	footer.setFillColor(normalColor);
-	footer.setPosition(32, 700);
+	footer.setPosition(32, 675);
 
 
 	m_menuText.setFillColor(normalColor);

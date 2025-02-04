@@ -47,8 +47,8 @@ struct CTransform : public Component
 
     CTransform() = default;
     CTransform(const sf::Vector2f& p) : pos(p) {}
-    CTransform(const sf::Vector2f& p, const sf::Vector2f& v)
-        : pos(p), prevPos(p), vel(v) {}
+    CTransform(const sf::Vector2f& p, const sf::Vector2f& v, const sf::Vector2f& sc, float a)
+        : pos(p), prevPos(p), vel(v), scale(sc), angle(a) {}
 
 };
 
@@ -99,9 +99,9 @@ struct CInput : public Component
     bool left{ false };
     bool right{ false };
     bool down{ false };
-
-    bool spinr{ false };
-    bool spinl{ false };
+    bool shoot{ false };
+    bool canShoot{ true };
+    bool canJump{ true };
 
     CInput() = default;
 };
