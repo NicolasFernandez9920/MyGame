@@ -92,7 +92,7 @@ void Scene_Game::spawnPlayer(sf::Vector2f pos)
 	centerOrigin(sprite);
 
 	_player->addComponent<CBoundingBox>(sf::Vector2f{ 30.f, 30.f });
-	_player->addComponent<CState>("straight");
+	_player->addComponent<CState>();
 	_player->addComponent<CInput>();
 	_player->addComponent<CPlayerState>();
 }
@@ -214,7 +214,13 @@ void Scene_Game::sDoAction(const Command& command)
 
 void Scene_Game::sRender()
 {
-	_game->window().setView(_worldView);
+	// set the view to center on the player
+	// this is a side scroller so only worry about X axis
+	auto& pPos = _player->getComponent<CTransform>().pos;
+	float centerX = std::max(_game->window().getSize().x / 2.f, pPos.x);
+	sf::View view = _game->window().getView();
+	view.setCenter(centerX, _game->window().getSize().y - view.getCenter().y);
+	_game->window().setView(view);
 
 	// draw bkg first
 	for (auto e : _entityManager.getEntities("bkg")) {
@@ -235,5 +241,60 @@ void Scene_Game::sRender()
 		sprite.setRotation(tfm.angle);
 		_game->window().draw(sprite);
 
+	}
+
+	// draw grid
+	sf::VertexArray lines(sf::Lines);
+	sf::Text gridText;
+	gridText.setFont(Assets::getInstance().getFont("Arial"));
+	gridText.setCharacterSize(10);
+
+	if (_drawGrid) {
+		float left = view.getCenter().x - view.getSize().x / 2.f;
+		float right = left + view.getSize().x;
+		float top = view.getCenter().y - view.getSize().y / 2.f;
+		float bot = top + view.getSize().y;
+
+		// aling grid to grid size
+		int nCols = static_cast<int>(view.getSize().x) / _gridCellSize.x;
+		int nRows = static_cast<int>(view.getSize().y) / _gridCellSize.y;
+
+
+		// row and col # of bot left
+		const int ROW0 = 768;
+		int firstCol = static_cast<int>(left) / static_cast<int>(_gridCellSize.x);
+		int lastRow = static_cast<int>(bot) / static_cast<int>(_gridCellSize.y);
+
+		lines.clear();
+
+		// vertical lines
+
+		for (int x{ 0 }; x <= nCols; ++x) {
+			lines.append(sf::Vector2f((firstCol + x) * _gridCellSize.x, top));
+			lines.append(sf::Vector2f((firstCol + x) * _gridCellSize.x, bot));
+		}
+
+
+		// horizontal lines
+		for (int y{ 0 }; y <= nRows; ++y) {
+			lines.append(sf::Vertex(sf::Vector2f(left, ROW0 - (lastRow - y) * _gridCellSize.y)));
+			lines.append(sf::Vertex(sf::Vector2f(right, ROW0 - (lastRow - y) * _gridCellSize.y)));
+		}
+
+
+		// grid coordinates
+		// (firstCol, lastRow) is the bottom left corner of the view
+		for (int x{ 0 }; x <= nCols; ++x) {
+			for (int y{ 0 }; y <= nRows; ++y) {
+				std::string label = std::string(
+					"(" + std::to_string(firstCol + x) + ", " + std::to_string(lastRow - y) + ")");
+				gridText.setString(label);
+				gridText.setPosition((x + firstCol) * _gridCellSize.x, ROW0 - (lastRow - y + 1) * _gridCellSize.y);
+				_game->window().draw(gridText);
+			}
+		}
+
+
+		_game->window().draw(lines);
 	}
 }

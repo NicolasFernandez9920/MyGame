@@ -41,7 +41,7 @@ public:
 	void				run();
 	void				quitLevel();
 	void				backLevel();
-	sf::RenderWindow& window();
+	sf::RenderWindow&   window();
 	sf::Vector2f		windowSize() const;
 	bool				isRunning();
 	void				loadConfigFromFile(const std::string& path,
