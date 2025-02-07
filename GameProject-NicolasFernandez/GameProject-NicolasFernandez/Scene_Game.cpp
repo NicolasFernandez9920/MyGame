@@ -41,8 +41,36 @@ void Scene_Game::sUpdate(sf::Time dt)
 	_entityManager.update();
 }
 
-void Scene_Game::sMovement(sf::Time dt)
+void Scene_Game::sMovement()
 {
+	// player movement
+	auto& pt = _player->getComponent<CTransform>();
+	pt.vel.x = 0.f;
+
+	if (_player->getComponent<CInput>().left)
+		pt.vel.x -= 1;
+
+	if (_player->getComponent<CInput>().right)
+		pt.vel.x += 1;
+
+	if (_player->getComponent<CInput>().up) {
+		_player->getComponent<CInput>().up = false;
+		pt.vel.y = -_playerConfig.JUMP;
+	}
+
+	// facing direction
+	if (pt.vel.x < -0.1)
+		_player->getComponent<CState>().set(CState::isFacingLeft);
+	if (pt.vel.x > 0.1)
+		_player->getComponent<CState>().unSet(CState::isFacingLeft);
+
+
+	// move all entities
+	for (auto e : _entityManager.getEntities()) {
+		auto& tx = e->getComponent<CTransform>();
+		tx.prevPos = tx.pos;
+		tx.pos += tx.vel;
+	}
 }
 
 void Scene_Game::onEnd()

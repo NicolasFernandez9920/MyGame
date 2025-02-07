@@ -115,10 +115,18 @@ struct CScore : public Component
 
 
 struct CState : public Component {
-    std::string state{ "none" };
+    enum State {
+        isGrounded = 1,
+        isFacingLeft = 1 << 1,
+        isRunning = 1 << 2
+    };
+    unsigned int  state{ 0 };
 
     CState() = default;
-    CState(const std::string& s) : state(s) {}
+    CState(unsigned int s) : state(s) {}
+    bool test(unsigned int x) { return (state & x); }
+    void set(unsigned int x) { state |= x; }
+    void unSet(unsigned int x) { state &= ~x; }
 };
 
 struct CPlayerState : public Component

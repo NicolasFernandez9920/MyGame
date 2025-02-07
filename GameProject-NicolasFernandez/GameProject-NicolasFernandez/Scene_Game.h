@@ -2,15 +2,22 @@
 
 #include "Scene.h"
 
+struct PlayerConfig
+{
+	float X{ 0.f }, Y{ 0.f }, CW{ 0.f }, CH{ 0.f };
+	float SPEED{ 0.f }, MAXSPEED{ 0.f }, JUMP{ 0.f }, GRAVITY{ 0.f };
+};
+
 
 const float CELL_SIZE = 64.f;
 
 class Scene_Game : public Scene
 {
 	sPtrEntt                        _player{ nullptr };
+	PlayerConfig			    	_playerConfig;
 	sf::View                        _worldView;
 	sf::FloatRect                   _worldBounds;
-	float                           _gridCellSize{ 64.f };
+	sf::Vector2f                    _gridCellSize{ 64.f, 64.f };
 
 	bool                            _drawTextures{ true };
 	bool                            _drawAABB{ false };
@@ -18,7 +25,7 @@ class Scene_Game : public Scene
 
 	//systems
 	void                    sUpdate(sf::Time dt);
-	void                    sMovement(sf::Time dt);
+	void                    sMovement();
 	void	                onEnd() override;
 
 	//helper functions
