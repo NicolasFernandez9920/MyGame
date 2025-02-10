@@ -8,7 +8,9 @@
 
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include "Animation.h"
 #include "Utilities.h"
+
 
 
 struct Component
@@ -63,6 +65,7 @@ struct CCollision : public Component
 
 struct CAnimation : public Component
 {
+    Animation       animation;
     sf::Vector2i    frameSize{ 0,0 };
     size_t          numbFrames{ 1 };
     size_t          currentFrame{ 0 };
@@ -88,6 +91,10 @@ struct CBoundingBox : public Component
     {}
 
     CBoundingBox(float w, float h) : size(sf::Vector2f(w, h)), halfSize(0.5f * size)
+    {}
+
+    CBoundingBox(const sf::Vector2u& s) : size(static_cast<float>(s.x), static_cast<float>(s.y)),
+        halfSize(0.5f * size)
     {}
 };
 
