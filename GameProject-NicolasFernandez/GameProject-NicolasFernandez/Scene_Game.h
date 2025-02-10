@@ -26,15 +26,17 @@ class Scene_Game : public Scene
 	//systems
 	void                    sUpdate(sf::Time dt);
 	void                    sMovement();
+	void					sCollision();
 	void	                onEnd() override;
 
 	//helper functions
 	void					spawnTweet(sf::Vector2f dir);
-	void                    spawnPlayer(sf::Vector2f pos);
+	void                    spawnPlayer();
 	void                    playerMovement();
 	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);
 	void	                registerActions();
+	sf::Vector2f            gridToMidPixel(float gridX, float gridY, sPtrEntt entity);
 
 public:
 	Scene_Game(GameEngine* gameEngine, const std::string& levelPath);

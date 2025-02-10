@@ -1,6 +1,6 @@
 # Game Config
 
-Window 1280 720 60 0
+Window 1280 768
 
 Font    Arial      	../assets/fonts/arial.ttf
 Font    main       	../assets/fonts/Sansation.ttf
@@ -10,7 +10,9 @@ Font    megaman         ../assets/fonts/megaman.ttf
 # Textures
 Texture city            ../assets/textures/retrowave.png
 Texture player          ../assets/textures/player.png
+Texture ground          ../assets/textures/ground.png
 
 # Sprites
 Sprite background       city     0   0   1920   1080
 Sprite playerDT         player   0   0     32     50
+
