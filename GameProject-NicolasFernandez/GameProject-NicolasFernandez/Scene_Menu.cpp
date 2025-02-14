@@ -53,6 +53,9 @@ void Scene_Menu::update(sf::Time dt)
 
 void Scene_Menu::sRender()
 {
+	static const sf::Color backgroundColor(23, 167, 168);
+
+	_game->window().clear(sf::Color(backgroundColor));
 
 	sf::View view = _game->window().getView();
 	view.setCenter(_game->window().getSize().x / 2.f, _game->window().getSize().y / 2.f);
@@ -61,7 +64,8 @@ void Scene_Menu::sRender()
 	static const sf::Color selectedColor(255, 255, 255);
 	static const sf::Color normalColor(0, 0, 0);
 
-	static const sf::Color backgroundColor(100, 100, 255);
+	//static const sf::Color backgroundColor(100, 100, 255);
+
 
 	sf::Text footer("UP: W    DOWN: S   PLAY: D    QUIT: ESC",
 		Assets::getInstance().getFont("megaman"), 20);

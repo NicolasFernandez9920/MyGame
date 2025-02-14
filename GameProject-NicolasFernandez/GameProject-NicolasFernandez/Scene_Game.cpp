@@ -186,7 +186,7 @@ void Scene_Game::loadLevel(const std::string& path)
 			else {
 				std::cout << "Texture: " << name << " loaded correctly\n";
 			}
-			sprite.setOrigin(0.f, 0.f);
+			sprite.setOrigin(0.f, 530.f);
 			sprite.setPosition(pos);
 		}
 		else if (token == "Tile") {
@@ -251,10 +251,9 @@ sf::Vector2f Scene_Game::gridToMidPixel(float gridX, float gridY, sPtrEntt entit
 	// should be based on world size not window size
 	float x = 0.f + gridX * _gridCellSize.x;
 	float y = 768.f - gridY * _gridCellSize.y;
-	//float y = (_game->window().getSize().y / 2.f) - gridY * _gridCellSize.y;
 
-	sf::Vector2f spriteSize = entity->getComponent<CAnimation>().animation.getSize();
-	return sf::Vector2f(x + spriteSize.x / 2.f, y - spriteSize.y / 2.f);
+	auto tr = entity->getComponent<CSprite>().sprite.getTextureRect();
+	return sf::Vector2f(x + tr.width / 2.f, y - tr.height / 2.f);
 }
 
 
@@ -304,6 +303,8 @@ void Scene_Game::sDoAction(const Command& command)
 
 void Scene_Game::sRender()
 {
+	_game->window().clear(sf::Color(201, 144, 189));
+
 	// set the view to center on the player
 	// this is a side scroller so only worry about X axis
 	auto& pPos = _player->getComponent<CTransform>().pos;

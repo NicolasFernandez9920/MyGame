@@ -2,7 +2,7 @@
 
 World 1280 768
 
-Bkg city     0  0
+Bkg city     0  768
 
 Tile ground  0  0
 Tile ground  1  0
@@ -17,5 +17,18 @@ Tile ground  9   3
 Tile ground  10  3
 Tile ground  11  3
 
-#     gX, gY, cW, cH, sX, sY,  sM,  g
-Player 2   2  32  50   5  20  20  0.75
+Tile ground  13  0
+Tile ground  14  0
+Tile ground  15  0
+Tile ground  16  0
+Tile ground  17  0
+Tile ground  18  0
+Tile ground  19  0
+Tile ground  20  0
+Tile ground  21  0
+Tile ground  22  0
+Tile ground  23  0
+Tile ground  24  0
+
+#     gX, gY, cW, cH,  sX, sY,  sM,  g
+Player 2   2  64  100   5  20   20  0.75
