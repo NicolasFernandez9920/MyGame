@@ -42,6 +42,7 @@ void Scene_Game::sUpdate(sf::Time dt)
 
 	sMovement();
 	sCollision();
+	spawnEnemy();
 }
 
 void Scene_Game::sMovement()
@@ -123,6 +124,8 @@ void Scene_Game::sCollision()
 			}
 		}
 	}
+
+	checkPlayerCollision();
 }
 
 void Scene_Game::onEnd()
@@ -147,6 +150,34 @@ void Scene_Game::spawnPlayer()
 	_player->addComponent<CState>();
 	_player->addComponent<CInput>();
 	_player->addComponent<CPlayerState>();
+}
+
+void Scene_Game::spawnEnemy()
+{
+	auto enemy = _entityManager.addEntity("protestant");
+	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
+
+	auto& sr = Assets::getInstance().getSpriteRec("protestantEnemy");
+	auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+	sprite.setTextureRect(sr.texRect);
+	centerOrigin(sprite);
+	//sprite.setOrigin(0.f, 70.f);
+
+	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
+
+}
+
+void Scene_Game::checkPlayerCollision()
+{
+	for (auto e : _entityManager.getEntities("protestant")) {
+		auto overlap = Physics::getOverlap(_player, e);
+
+		if (overlap.x > 0 && overlap.y > 0) {
+
+			_player->getComponent<CPlayerState>().isDead = true;
+			_player->destroy();
+		}
+	}
 }
 
 void Scene_Game::playerMovement()
@@ -213,6 +244,17 @@ void Scene_Game::loadLevel(const std::string& path)
 				_playerConfig.JUMP >>
 				_playerConfig.MAXSPEED >>
 				_playerConfig.GRAVITY;
+		}
+		else if (token == "Enemy") {
+			config >>
+				_enemyConfig.X >>
+				_enemyConfig.Y >>
+				_enemyConfig.CW >>
+				_enemyConfig.CH >>
+				_enemyConfig.SPEED >>
+				_enemyConfig.JUMP >>
+				_enemyConfig.MAXSPEED >>
+				_enemyConfig.GRAVITY;
 		}
 		else if (token == "World") {
 			config >> _worldBounds.width >> _worldBounds.height;

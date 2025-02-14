@@ -8,6 +8,11 @@ struct PlayerConfig
 	float SPEED{ 0.f }, MAXSPEED{ 0.f }, JUMP{ 0.f }, GRAVITY{ 0.f };
 };
 
+struct EnemyConfig
+{
+	float X{ 0.f }, Y{ 0.f }, CW{ 0.f }, CH{ 0.f };
+	float SPEED{ 0.f }, MAXSPEED{ 0.f }, JUMP{ 0.f }, GRAVITY{ 0.f };
+};
 
 const float CELL_SIZE = 64.f;
 
@@ -15,6 +20,7 @@ class Scene_Game : public Scene
 {
 	sPtrEntt                        _player{ nullptr };
 	PlayerConfig			    	_playerConfig;
+	EnemyConfig						_enemyConfig;
 	sf::View                        _worldView;
 	sf::FloatRect                   _worldBounds;
 	sf::Vector2f                    _gridCellSize{ 64.f, 64.f };
@@ -32,6 +38,8 @@ class Scene_Game : public Scene
 	//helper functions
 	void					spawnTweet(sf::Vector2f dir);
 	void                    spawnPlayer();
+	void					spawnEnemy();
+	void                    checkPlayerCollision();
 	void                    playerMovement();
 	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);

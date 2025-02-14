@@ -32,3 +32,4 @@ Tile ground  24  0
 
 #     gX, gY, cW, cH,  sX, sY,  sM,  g
 Player 2   2  64  100   5  20   20  0.75
+Enemy  24  1  58  70    5  20   20  0.75
