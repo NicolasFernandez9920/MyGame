@@ -139,7 +139,6 @@ void Scene_Game::spawnTweet(sf::Vector2f dir)
 void Scene_Game::spawnPlayer()
 {
 	_player = _entityManager.addEntity("player");
-	_player->addComponent<CTransform>(gridToMidPixel(_playerConfig.X, _playerConfig.Y, _player));
 
 	auto& sr = Assets::getInstance().getSpriteRec("playerDT");
 	auto& sprite = _player->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
@@ -147,6 +146,7 @@ void Scene_Game::spawnPlayer()
 	centerOrigin(sprite);
 
 	_player->addComponent<CBoundingBox>(sf::Vector2f(_playerConfig.CW, _playerConfig.CH));
+	_player->addComponent<CTransform>(gridToMidPixel(_playerConfig.X, _playerConfig.Y, _player));
 	_player->addComponent<CState>();
 	_player->addComponent<CInput>();
 	_player->addComponent<CPlayerState>();
@@ -155,7 +155,7 @@ void Scene_Game::spawnPlayer()
 void Scene_Game::spawnEnemy()
 {
 	auto enemy = _entityManager.addEntity("protestant");
-	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
+
 
 	auto& sr = Assets::getInstance().getSpriteRec("protestantEnemy");
 	auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
@@ -164,11 +164,13 @@ void Scene_Game::spawnEnemy()
 	//sprite.setOrigin(0.f, 70.f);
 
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
+	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
 
 }
 
 void Scene_Game::checkPlayerCollision()
 {
+	// Collision with enemy
 	for (auto e : _entityManager.getEntities("protestant")) {
 		auto overlap = Physics::getOverlap(_player, e);
 
@@ -176,6 +178,16 @@ void Scene_Game::checkPlayerCollision()
 
 			_player->getComponent<CPlayerState>().isDead = true;
 			_player->destroy();
+		}
+	}
+
+	// Collision with pickup
+	for (auto e : _entityManager.getEntities("object")) {
+		auto overlap = Physics::getOverlap(_player, e);
+
+		if (overlap.x > 0 && overlap.y > 0) {
+
+			e->destroy();
 		}
 	}
 }
@@ -226,6 +238,20 @@ void Scene_Game::loadLevel(const std::string& path)
 			config >> name >> gx >> gy;
 
 			auto e = _entityManager.addEntity("tile");
+			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
+			auto pos = gridToMidPixel(gx, gy, e);
+			std::cout << "Tile at (" << pos.x << ", " << pos.y << ")\n";
+			e->addComponent<CTransform>(pos);
+
+
+		}
+		else if (token == "Object") {
+			std::string name;
+			float gx, gy;
+			config >> name >> gx >> gy;
+
+			auto e = _entityManager.addEntity("object");
 			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
 			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
 			auto pos = gridToMidPixel(gx, gy, e);

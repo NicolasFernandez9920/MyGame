@@ -12,6 +12,7 @@ Texture city            ../assets/textures/city.png
 Texture player          ../assets/textures/test.png
 Texture ground          ../assets/textures/ground.png
 Texture enemy           ../assets/textures/enemy2.png
+Texture redcap          ../assets/textures/RedCapPickUp.png
 
 # Sprites
 Sprite background            city     0   0   2937   532
