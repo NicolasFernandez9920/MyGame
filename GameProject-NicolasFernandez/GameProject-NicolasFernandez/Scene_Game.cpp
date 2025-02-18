@@ -323,7 +323,7 @@ void Scene_Game::loadLevel(const std::string& path)
 			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
 			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
 			auto pos = gridToMidPixel(gx, gy, e);
-			std::cout << "Tile at (" << pos.x << ", " << pos.y << ")\n";
+			std::cout << "Object at (" << pos.x << ", " << pos.y << ")\n";
 			e->addComponent<CTransform>(pos);
 
 
@@ -461,10 +461,11 @@ void Scene_Game::sRender()
 
 	for (auto& e : _entityManager.getEntities()) {
 
+		if (e->hasComponent<CPlayerState>() && e->getComponent<CPlayerState>().isDead)
+			continue;
 
-
-			if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
-				continue;
+		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
+			continue;
 
 			// Draw Sprite
 			auto& sprite = e->getComponent<CSprite>().sprite;
