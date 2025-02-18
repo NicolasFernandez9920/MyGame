@@ -38,7 +38,6 @@ void Scene_Game::init(const std::string& levelPath)
 
 void Scene_Game::sUpdate(sf::Time dt)
 {
-
 	_entityManager.update();
 
 	sMovement();
