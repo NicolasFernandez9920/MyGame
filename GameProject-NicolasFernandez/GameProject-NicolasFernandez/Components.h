@@ -33,6 +33,15 @@ struct CSprite : public Component {
     }
 };
 
+struct CLifespan : public Component
+{
+    int total{ 0 };
+    int remaining{ 0 };
+
+    CLifespan() = default;
+    CLifespan(int t) : total(t), remaining{ t } {}
+
+};
 
 
 struct CTransform : public Component
@@ -109,6 +118,7 @@ struct CInput : public Component
     bool shoot{ false };
     bool canShoot{ true };
     bool canJump{ true };
+    bool hasWeapon{ false };
 
     CInput() = default;
 };

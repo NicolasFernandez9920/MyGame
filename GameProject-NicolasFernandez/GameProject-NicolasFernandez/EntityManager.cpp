@@ -46,6 +46,10 @@ EntityVec& EntityManager::getEntities() {
 }
 
 
+//void EntityManager::removeDeadEntities(EntityVec& v) {
+//    v.erase(std::remove_if(v.begin(), v.end(), [](auto e) {return!(e->isActive()); }), v.end());
+//}
+
 void EntityManager::removeDeadEntities(EntityVec& v) {
     v.erase(std::remove_if(v.begin(), v.end(), [](auto e) {return!(e->isActive()); }), v.end());
 }

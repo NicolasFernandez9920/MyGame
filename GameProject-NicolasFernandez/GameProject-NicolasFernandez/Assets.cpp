@@ -77,7 +77,7 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
 {
     if (_textures.find(textureName) == _textures.end()) {
         std::cerr << "Texture not found " << textureName;
-        throw std::out_of_range("Texture not found " + textureName);
+        throw std::out_of_range("Texture not found: " + textureName);
     }
     return _textures.at(textureName);
 }
@@ -91,6 +91,12 @@ const AnimationRec& Assets::getAnimationRec(const std::string& name) const
 {
     return _animationRecs.at(name);
 }
+
+bool Assets::hasTexture(const std::string& textureName) const
+{
+    return _textures.find(textureName) != _textures.end();
+}
+
 
 void Assets::loadFonts(const std::string& path)
 {
@@ -136,6 +142,7 @@ void Assets::loadTextures(const std::string& path)
             std::string name, path;
             confFile >> name >> path;
             addTexture(name, path);
+            std::cout << "Texture loaded: " << name << " from " << path << "\n";
         }
         else {
             // ignore rest of line and continue

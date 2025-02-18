@@ -71,6 +71,8 @@ public:
     const SpriteRec& getSpriteRec(const std::string& name) const;
     const AnimationRec& getAnimationRec(const std::string& name) const;
 
+    bool hasTexture(const std::string& textureName) const;
+
 };
 
 

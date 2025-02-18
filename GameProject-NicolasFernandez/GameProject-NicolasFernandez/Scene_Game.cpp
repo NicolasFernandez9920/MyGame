@@ -38,11 +38,13 @@ void Scene_Game::init(const std::string& levelPath)
 
 void Scene_Game::sUpdate(sf::Time dt)
 {
+
 	_entityManager.update();
 
 	sMovement();
 	sCollision();
 	spawnEnemy();
+	sLifespan();
 }
 
 void Scene_Game::sMovement()
@@ -126,6 +128,22 @@ void Scene_Game::sCollision()
 	}
 
 	checkPlayerCollision();
+	checkEnemyCollision();
+}
+
+void Scene_Game::sLifespan()
+{
+	// move all entities
+	for (auto e : _entityManager.getEntities("bullet")) {
+		auto& lifespan = e->getComponent<CLifespan>();
+		if (lifespan.has) {
+			lifespan.remaining -= 1;
+			if (lifespan.remaining < 0) {
+				e->getComponent<CLifespan>().has = false;
+				e->destroy();
+			}
+		}
+	}
 }
 
 void Scene_Game::onEnd()
@@ -165,7 +183,24 @@ void Scene_Game::spawnEnemy()
 
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
 	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
+	enemy->addComponent<CPlayerState>();
+}
 
+void Scene_Game::spawnBullet(sPtrEntt e)
+{
+	auto tx = e->getComponent<CTransform>();
+
+	if (tx.has) {
+		auto bullet = _entityManager.addEntity("bullet");
+
+		bullet->addComponent<CSprite>(Assets::getInstance().getTexture(_playerConfig.WEAPON)).sprite;
+		bullet->addComponent<CBoundingBox>(Assets::getInstance().getTexture(_playerConfig.WEAPON).getSize());
+		bullet->addComponent<CLifespan>(50);
+		bullet->addComponent<CTransform>(tx.pos);
+		bullet->getComponent<CTransform>().vel.x = 10 * (e->getComponent<CState>().test(CState::isFacingLeft) ? -1 : 1);
+		bullet->getComponent<CTransform>().vel.y = 0;
+
+	}
 }
 
 void Scene_Game::checkPlayerCollision()
@@ -187,8 +222,42 @@ void Scene_Game::checkPlayerCollision()
 
 		if (overlap.x > 0 && overlap.y > 0) {
 
+
+			//auto& newSprite = _player->getComponent<CSprite>();
+			//newSprite.sprite.setTexture(Assets::getInstance().getTexture("DTRedCap"));
+			//newSprite.sprite.setTextureRect(Assets::getInstance().getSpriteRec("DTRedCap").texRect);
+
+			// activate weapon
+			_player->getComponent<CInput>().hasWeapon = true;
+
+			// destroy pickup
 			e->destroy();
+
 		}
+	}
+}
+
+void Scene_Game::checkEnemyCollision()
+{
+	auto bullets = _entityManager.getEntities("bullet");
+
+
+	for (auto e : _entityManager.getEntities("protestant")) {
+		for (auto b : bullets) {
+			auto overlap = Physics::getOverlap(b, e);
+
+			if (overlap.x > 0 && overlap.y > 0) {
+
+
+				//auto& enemySprite = e->getComponent<CSprite>();
+				//enemySprite.sprite.setTexture(Assets::getInstance().getTexture("newEnemy"));
+
+				e->getComponent<CPlayerState>().isDead = true;
+				e->destroy();
+				b->destroy();
+			}
+		}
+
 	}
 }
 
@@ -269,7 +338,8 @@ void Scene_Game::loadLevel(const std::string& path)
 				_playerConfig.SPEED >>
 				_playerConfig.JUMP >>
 				_playerConfig.MAXSPEED >>
-				_playerConfig.GRAVITY;
+				_playerConfig.GRAVITY >>
+				_playerConfig.WEAPON;
 		}
 		else if (token == "Enemy") {
 			config >>
@@ -352,7 +422,8 @@ void Scene_Game::sDoAction(const Command& command)
 			}
 		}
 		else if (command.name() == "SHOOT") {
-			if (_player->getComponent<CInput>().canShoot) {
+			if (_player->getComponent<CInput>().hasWeapon && _player->getComponent<CInput>().canShoot) {
+				spawnBullet(_player);
 				_player->getComponent<CInput>().shoot = true;
 				_player->getComponent<CInput>().canShoot = false;
 			}
@@ -390,28 +461,33 @@ void Scene_Game::sRender()
 	}
 
 	for (auto& e : _entityManager.getEntities()) {
-		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
-			continue;
 
-		// Draw Sprite
-		auto& sprite = e->getComponent<CSprite>().sprite;
-		auto& tfm = e->getComponent<CTransform>();
-		sprite.setPosition(tfm.pos);
-		sprite.setRotation(tfm.angle);
-		_game->window().draw(sprite);
 
-		// Draw Collision box
-		if (_drawAABB && e->hasComponent<CBoundingBox>()) {
-			auto box = e->getComponent<CBoundingBox>();
-			sf::RectangleShape rect;
-			rect.setSize(sf::Vector2f{ box.size.x, box.size.y });
-			centerOrigin(rect);
-			rect.setPosition(e->getComponent<CTransform>().pos);
-			rect.setFillColor(sf::Color(0, 0, 0, 0));
-			rect.setOutlineColor(sf::Color{ 0, 255, 0 });
-			rect.setOutlineThickness(2.f);
-			_game->window().draw(rect);
-		}
+
+			if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
+				continue;
+
+			// Draw Sprite
+			auto& sprite = e->getComponent<CSprite>().sprite;
+			auto& tfm = e->getComponent<CTransform>();
+			sprite.setPosition(tfm.pos);
+			sprite.setRotation(tfm.angle);
+			_game->window().draw(sprite);
+
+			// Draw Collision box
+			if (_drawAABB && e->hasComponent<CBoundingBox>()) {
+				auto box = e->getComponent<CBoundingBox>();
+				sf::RectangleShape rect;
+				rect.setSize(sf::Vector2f{ box.size.x, box.size.y });
+				centerOrigin(rect);
+				rect.setPosition(e->getComponent<CTransform>().pos);
+				rect.setFillColor(sf::Color(0, 0, 0, 0));
+				rect.setOutlineColor(sf::Color{ 0, 255, 0 });
+				rect.setOutlineThickness(2.f);
+				_game->window().draw(rect);
+			}
+
+
 
 	}
 

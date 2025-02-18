@@ -6,6 +6,7 @@ struct PlayerConfig
 {
 	float X{ 0.f }, Y{ 0.f }, CW{ 0.f }, CH{ 0.f };
 	float SPEED{ 0.f }, MAXSPEED{ 0.f }, JUMP{ 0.f }, GRAVITY{ 0.f };
+	std::string WEAPON;
 };
 
 struct EnemyConfig
@@ -33,13 +34,16 @@ class Scene_Game : public Scene
 	void                    sUpdate(sf::Time dt);
 	void                    sMovement();
 	void					sCollision();
+	void					sLifespan();
 	void	                onEnd() override;
 
 	//helper functions
 	void					spawnTweet(sf::Vector2f dir);
 	void                    spawnPlayer();
 	void					spawnEnemy();
+	void					spawnBullet(sPtrEntt entity);
 	void                    checkPlayerCollision();
+	void                    checkEnemyCollision();
 	void                    playerMovement();
 	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);
