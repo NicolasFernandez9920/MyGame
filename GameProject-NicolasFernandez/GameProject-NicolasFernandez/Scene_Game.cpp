@@ -221,10 +221,14 @@ void Scene_Game::checkPlayerCollision()
 
 		if (overlap.x > 0 && overlap.y > 0) {
 
+			_player->removeComponent<CSprite>();
 
-			//auto& newSprite = _player->getComponent<CSprite>();
-			//newSprite.sprite.setTexture(Assets::getInstance().getTexture("DTRedCap"));
-			//newSprite.sprite.setTextureRect(Assets::getInstance().getSpriteRec("DTRedCap").texRect);
+
+			auto& sr = Assets::getInstance().getSpriteRec("DTRedCap");
+			auto& sprite = _player->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+			sprite.setTextureRect(sr.texRect);
+			centerOrigin(sprite);
+
 
 			// activate weapon
 			_player->getComponent<CInput>().hasWeapon = true;
@@ -251,8 +255,10 @@ void Scene_Game::checkEnemyCollision()
 				//auto& enemySprite = e->getComponent<CSprite>();
 				//enemySprite.sprite.setTexture(Assets::getInstance().getTexture("newEnemy"));
 
-				e->getComponent<CPlayerState>().isDead = true;
-				e->destroy();
+				//e->getComponent<CPlayerState>().isDead = true;
+				//e->destroy();
+
+
 				b->destroy();
 			}
 		}
