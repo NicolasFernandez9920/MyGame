@@ -41,8 +41,8 @@ void Scene_Game::sUpdate(sf::Time dt)
 	_entityManager.update();
 
 	sMovement();
-	sCollision();
 	spawnEnemy();
+	sCollision();
 	sLifespan();
 }
 
@@ -178,7 +178,6 @@ void Scene_Game::spawnEnemy()
 	auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
 	sprite.setTextureRect(sr.texRect);
 	centerOrigin(sprite);
-	//sprite.setOrigin(0.f, 70.f);
 
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
 	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
@@ -221,9 +220,10 @@ void Scene_Game::checkPlayerCollision()
 
 		if (overlap.x > 0 && overlap.y > 0) {
 
+			// removing player sprite
 			_player->removeComponent<CSprite>();
 
-
+			// adding new sprite
 			auto& sr = Assets::getInstance().getSpriteRec("DTRedCap");
 			auto& sprite = _player->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
 			sprite.setTextureRect(sr.texRect);
@@ -251,14 +251,16 @@ void Scene_Game::checkEnemyCollision()
 
 			if (overlap.x > 0 && overlap.y > 0) {
 
+				// removing enemy sprite
+				e->removeComponent<CSprite>();
 
-				//auto& enemySprite = e->getComponent<CSprite>();
-				//enemySprite.sprite.setTexture(Assets::getInstance().getTexture("newEnemy"));
+				// adding new sprite
+				auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
+				auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+				sprite.setTextureRect(sr.texRect);
+				centerOrigin(sprite);
 
-				//e->getComponent<CPlayerState>().isDead = true;
-				//e->destroy();
-
-
+				// destroy bullet
 				b->destroy();
 			}
 		}
@@ -461,16 +463,29 @@ void Scene_Game::sRender()
 	for (auto e : _entityManager.getEntities("bkg")) {
 		if (e->getComponent<CSprite>().has) {
 			auto& sprite = e->getComponent<CSprite>().sprite;
+
+
+
 			_game->window().draw(sprite);
 		}
 	}
 
+	//for (auto& e : _entityManager.getEntities("protestant")) {
+	//	if (e->hasComponent<CSprite>() && e->hasComponent<CTransform>()) {
+	//		auto& sprite = e->getComponent<CSprite>().sprite;
+	//		auto& tfm = e->getComponent<CTransform>();
+
+	//		sprite.setPosition(tfm.pos);
+	//		sprite.setRotation(tfm.angle);
+
+	//		_game->window().draw(sprite);
+	//	}
+	//}
+
 	for (auto& e : _entityManager.getEntities()) {
 
-		if (e->hasComponent<CPlayerState>() && e->getComponent<CPlayerState>().isDead)
-			continue;
 
-		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
+		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg") //|| e->getTag() == "protestant")
 			continue;
 
 			// Draw Sprite
@@ -479,6 +494,7 @@ void Scene_Game::sRender()
 			sprite.setPosition(tfm.pos);
 			sprite.setRotation(tfm.angle);
 			_game->window().draw(sprite);
+
 
 			// Draw Collision box
 			if (_drawAABB && e->hasComponent<CBoundingBox>()) {
@@ -492,9 +508,6 @@ void Scene_Game::sRender()
 				rect.setOutlineThickness(2.f);
 				_game->window().draw(rect);
 			}
-
-
-
 	}
 
 	// draw grid

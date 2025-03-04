@@ -29,6 +29,25 @@ Tile ground  21  0
 Tile ground  22  0
 Tile ground  23  0
 Tile ground  24  0
+Tile ground  25  0
+Tile ground  26  0
+Tile ground  27  0
+Tile ground  28  0
+Tile ground  29  0
+Tile ground  30  0
+
+Tile ground  33  2
+Tile ground  35  4
+Tile ground  38  4
+Tile ground  41  6
+Tile ground  46  6
+
+Tile ground  51  0
+Tile ground  52  0
+Tile ground  53  0
+Tile ground  54  0
+Tile ground  55  0
+Tile ground  56  0
 
 Object redcap 10 4
 
