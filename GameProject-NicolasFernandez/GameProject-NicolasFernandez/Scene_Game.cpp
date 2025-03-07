@@ -40,6 +40,7 @@ void Scene_Game::sUpdate(sf::Time dt)
 {
 	_entityManager.update();
 
+	sAnimation(dt);
 	sMovement();
 	spawnEnemy();
 	sCollision();
@@ -48,6 +49,8 @@ void Scene_Game::sUpdate(sf::Time dt)
 
 void Scene_Game::sMovement()
 {
+	animatePlayer();
+
 	// player movement
 	auto& pt = _player->getComponent<CTransform>();
 	pt.vel.x = 0.f;
@@ -158,6 +161,14 @@ void Scene_Game::sAnimation(sf::Time dt)
 
 void Scene_Game::animatePlayer()
 {
+	auto& sprite = _player->getComponent<CSprite>().sprite;
+	auto pv = _player->getComponent<CTransform>().vel;
+
+	if (pv.x < -0.1)
+		sprite.setScale(-1.f, 1.f);
+	else if (pv.x > 0.1)
+		sprite.setScale(1.f, 1.f);
+
 }
 
 void Scene_Game::onEnd()
@@ -267,17 +278,16 @@ void Scene_Game::checkEnemyCollision()
 
 			if (overlap.x > 0 && overlap.y > 0) {
 
-				//std::cout << "Removing old sprite from enemy\n";
-				//// removing enemy sprite
-				//e->removeComponent<CSprite>();
+				// removing enemy sprite
+				e->removeComponent<CSprite>();
 
-				if (e->hasComponent<CSprite>()) {
-					std::cout << "Removing old sprite from enemy\n";
-					e->removeComponent<CSprite>();
-					std::cout << "Old sprite removed\n";
-				}
+				//if (e->hasComponent<CSprite>()) {
+				//	std::cout << "Removing old sprite from enemy\n";
+				//	e->removeComponent<CSprite>();
+				//	std::cout << "Old sprite removed\n";
+				//}
 
-				std::cout << "Adding new sprite to enemy\n";
+				//std::cout << "Adding new sprite to enemy\n";
 				// adding new sprite
 				auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
 				auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
