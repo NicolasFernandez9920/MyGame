@@ -145,9 +145,25 @@ void Scene_Game::sLifespan()
 	}
 }
 
+void Scene_Game::sAnimation(sf::Time dt)
+{
+	for (auto e : _entityManager.getEntities()) {
+		// update all animations
+		if (e->getComponent<CAnimation>().has) {
+			auto& anim = e->getComponent<CAnimation>();
+			anim.animation.update(dt);
+		}
+	}
+}
+
+void Scene_Game::animatePlayer()
+{
+}
+
 void Scene_Game::onEnd()
 {
 }
+
 
 void Scene_Game::spawnTweet(sf::Vector2f dir)
 {
@@ -472,8 +488,6 @@ void Scene_Game::sRender()
 		if (e->getComponent<CSprite>().has) {
 			auto& sprite = e->getComponent<CSprite>().sprite;
 
-
-
 			_game->window().draw(sprite);
 		}
 	}
@@ -482,7 +496,7 @@ void Scene_Game::sRender()
 	for (auto& e : _entityManager.getEntities()) {
 
 
-		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg") //|| e->getTag() == "protestant")
+		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
 			continue;
 
 			// Draw Sprite

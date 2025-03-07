@@ -35,9 +35,11 @@ class Scene_Game : public Scene
 	void                    sMovement();
 	void					sCollision();
 	void					sLifespan();
+	void					sAnimation(sf::Time dt);
 	void	                onEnd() override;
 
 	//helper functions
+	void                    animatePlayer();
 	void					spawnTweet(sf::Vector2f dir);
 	void                    spawnPlayer();
 	void					spawnEnemy();
