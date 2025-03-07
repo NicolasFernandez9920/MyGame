@@ -154,4 +154,9 @@ struct CPlayerState : public Component
     CPlayerState() = default;
 };
 
+struct CEnemyState : public Component
+{
+    bool isDefeated = false;
+};
+
 #endif //BREAKOUT_COMPONENTS_H

@@ -33,6 +33,7 @@ void Scene_Game::init(const std::string& levelPath)
 	_worldView.setCenter(view);
 
 	spawnPlayer();
+	spawnEnemy();
 
 }
 
@@ -42,7 +43,6 @@ void Scene_Game::sUpdate(sf::Time dt)
 
 	sAnimation(dt);
 	sMovement();
-	spawnEnemy();
 	sCollision();
 	sLifespan();
 }
@@ -209,6 +209,7 @@ void Scene_Game::spawnEnemy()
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
 	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
 	enemy->addComponent<CPlayerState>();
+	enemy->addComponent<CEnemyState>().isDefeated = false;
 }
 
 void Scene_Game::spawnBullet(sPtrEntt e)
@@ -232,6 +233,9 @@ void Scene_Game::checkPlayerCollision()
 {
 	// Collision with enemy
 	for (auto e : _entityManager.getEntities("protestant")) {
+		if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)
+			continue; // it doesn't kill the player if enemy is defeated
+
 		auto overlap = Physics::getOverlap(_player, e);
 
 		if (overlap.x > 0 && overlap.y > 0) {
@@ -271,23 +275,19 @@ void Scene_Game::checkEnemyCollision()
 {
 	auto bullets = _entityManager.getEntities("bullet");
 
-
 	for (auto e : _entityManager.getEntities("protestant")) {
 		for (auto b : bullets) {
 			auto overlap = Physics::getOverlap(b, e);
 
 			if (overlap.x > 0 && overlap.y > 0) {
 
+				if (e->hasComponent<CEnemyState>()) {
+					e->getComponent<CEnemyState>().isDefeated = true;
+				}
+
 				// removing enemy sprite
 				e->removeComponent<CSprite>();
 
-				//if (e->hasComponent<CSprite>()) {
-				//	std::cout << "Removing old sprite from enemy\n";
-				//	e->removeComponent<CSprite>();
-				//	std::cout << "Old sprite removed\n";
-				//}
-
-				//std::cout << "Adding new sprite to enemy\n";
 				// adding new sprite
 				auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
 				auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
@@ -483,6 +483,7 @@ void Scene_Game::sDoAction(const Command& command)
 
 void Scene_Game::sRender()
 {
+
 	_game->window().clear(sf::Color(201, 144, 189));
 
 	// set the view to center on the player
