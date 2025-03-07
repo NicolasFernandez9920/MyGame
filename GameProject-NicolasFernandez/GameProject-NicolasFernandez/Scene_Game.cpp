@@ -251,9 +251,17 @@ void Scene_Game::checkEnemyCollision()
 
 			if (overlap.x > 0 && overlap.y > 0) {
 
-				// removing enemy sprite
-				e->removeComponent<CSprite>();
+				//std::cout << "Removing old sprite from enemy\n";
+				//// removing enemy sprite
+				//e->removeComponent<CSprite>();
 
+				if (e->hasComponent<CSprite>()) {
+					std::cout << "Removing old sprite from enemy\n";
+					e->removeComponent<CSprite>();
+					std::cout << "Old sprite removed\n";
+				}
+
+				std::cout << "Adding new sprite to enemy\n";
 				// adding new sprite
 				auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
 				auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
@@ -470,17 +478,6 @@ void Scene_Game::sRender()
 		}
 	}
 
-	//for (auto& e : _entityManager.getEntities("protestant")) {
-	//	if (e->hasComponent<CSprite>() && e->hasComponent<CTransform>()) {
-	//		auto& sprite = e->getComponent<CSprite>().sprite;
-	//		auto& tfm = e->getComponent<CTransform>();
-
-	//		sprite.setPosition(tfm.pos);
-	//		sprite.setRotation(tfm.angle);
-
-	//		_game->window().draw(sprite);
-	//	}
-	//}
 
 	for (auto& e : _entityManager.getEntities()) {
 

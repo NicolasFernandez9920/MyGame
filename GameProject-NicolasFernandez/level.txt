@@ -4,6 +4,8 @@ World 1280 768
 
 Bkg city     0  768
 
+Tile hydrant 22 1
+
 Tile ground  0  0
 Tile ground  1  0
 Tile ground  2  0
