@@ -47,6 +47,7 @@ class Scene_Game : public Scene
 	void                    checkPlayerCollision();
 	void                    checkEnemyCollision();
 	void                    playerMovement();
+	void					protesterMovement();
 	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);
 	void	                registerActions();

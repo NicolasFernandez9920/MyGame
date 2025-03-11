@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 
+
 Scene_Game::Scene_Game(GameEngine* gameEngine, const std::string& levelPath)
 	: Scene(gameEngine)
 	, _worldView(gameEngine->window().getDefaultView())
@@ -42,29 +43,18 @@ void Scene_Game::sUpdate(sf::Time dt)
 	_entityManager.update();
 
 	sAnimation(dt);
-	sMovement();
 	sCollision();
+	sMovement();
 	sLifespan();
 }
 
 void Scene_Game::sMovement()
 {
 	animatePlayer();
+	playerMovement();
+	protesterMovement();
 
-	// player movement
 	auto& pt = _player->getComponent<CTransform>();
-	pt.vel.x = 0.f;
-
-	if (_player->getComponent<CInput>().left)
-		pt.vel.x -= 1;
-
-	if (_player->getComponent<CInput>().right)
-		pt.vel.x += 1;
-
-	if (_player->getComponent<CInput>().up) {
-		_player->getComponent<CInput>().up = false;
-		pt.vel.y = -_playerConfig.JUMP;
-	}
 
 	// gravity
 	pt.vel.y += _playerConfig.GRAVITY;
@@ -198,10 +188,10 @@ void Scene_Game::spawnPlayer()
 
 void Scene_Game::spawnEnemy()
 {
-	auto enemy = _entityManager.addEntity("protestant");
+	auto enemy = _entityManager.addEntity("protester");
 
 
-	auto& sr = Assets::getInstance().getSpriteRec("protestantEnemy");
+	auto& sr = Assets::getInstance().getSpriteRec("protesterEnemy");
 	auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
 	sprite.setTextureRect(sr.texRect);
 	centerOrigin(sprite);
@@ -210,6 +200,8 @@ void Scene_Game::spawnEnemy()
 	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
 	enemy->addComponent<CPlayerState>();
 	enemy->addComponent<CEnemyState>().isDefeated = false;
+
+
 }
 
 void Scene_Game::spawnBullet(sPtrEntt e)
@@ -232,7 +224,7 @@ void Scene_Game::spawnBullet(sPtrEntt e)
 void Scene_Game::checkPlayerCollision()
 {
 	// Collision with enemy
-	for (auto e : _entityManager.getEntities("protestant")) {
+	for (auto e : _entityManager.getEntities("protester")) {
 		if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)
 			continue; // it doesn't kill the player if enemy is defeated
 
@@ -275,7 +267,9 @@ void Scene_Game::checkEnemyCollision()
 {
 	auto bullets = _entityManager.getEntities("bullet");
 
-	for (auto e : _entityManager.getEntities("protestant")) {
+	// collision with bullets
+
+	for (auto e : _entityManager.getEntities("protester")) {
 		for (auto b : bullets) {
 			auto overlap = Physics::getOverlap(b, e);
 
@@ -300,10 +294,50 @@ void Scene_Game::checkEnemyCollision()
 		}
 
 	}
+
+	// collision with hydrants
+	auto hydrants = _entityManager.getEntities("wall");
+
+	for (auto e : _entityManager.getEntities("protester")) {
+		for (auto h : hydrants) {
+			auto overlap = Physics::getOverlap(h, e);
+
+			if (overlap.x > 0 && overlap.y > 0) {
+				auto& trf = e->getComponent<CTransform>();
+
+				trf.pos.x -= overlap.x;
+				trf.vel.x = -trf.vel.x;
+
+			}
+		}
+	}
 }
 
 void Scene_Game::playerMovement()
 {
+	auto& pt = _player->getComponent<CTransform>();
+	pt.vel.x = 0.f;
+
+	if (_player->getComponent<CInput>().left)
+		pt.vel.x -= 1;
+
+	if (_player->getComponent<CInput>().right)
+		pt.vel.x += 1;
+
+	if (_player->getComponent<CInput>().up) {
+		_player->getComponent<CInput>().up = false;
+		pt.vel.y = -_playerConfig.JUMP;
+	}
+}
+
+void Scene_Game::protesterMovement()
+{
+	auto enemies = _entityManager.getEntities("protester");
+
+	for (auto e : enemies) {
+		auto& enemyMov = e->getComponent<CTransform>();
+		enemyMov.vel = sf::Vector2f(_enemyConfig.SPEED, 0.f);
+	}
 }
 
 
@@ -347,11 +381,14 @@ void Scene_Game::loadLevel(const std::string& path)
 			float gx, gy;
 			config >> name >> gx >> gy;
 
-			auto e = _entityManager.addEntity("tile");
+			// differentiating types of tiles
+			std::string entityType = (name == "hydrant") ? "wall" : "tile";
+
+			auto e = _entityManager.addEntity(entityType);
 			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
 			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
 			auto pos = gridToMidPixel(gx, gy, e);
-			std::cout << "Tile at (" << pos.x << ", " << pos.y << ")\n";
+			std::cout << entityType << " tile at (" << pos.x << ", " << pos.y << ")\n";
 			e->addComponent<CTransform>(pos);
 
 

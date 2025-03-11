@@ -22,7 +22,7 @@ Texture DTAnimation     ../assets/textures/DTAnimation.png
 # Sprites
 Sprite background            city           0   0   2937   532
 Sprite playerDT              player         0   0     64    100
-Sprite protestantEnemy       enemy          0   0     58     70
+Sprite protesterEnemy        enemy          0   0     58     70
 Sprite DTRedCap              playerRedcap   0   0     73    108
 Sprite newEnemy              enemyRedCap    0   0     44     71
 

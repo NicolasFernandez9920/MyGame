@@ -157,6 +157,7 @@ struct CPlayerState : public Component
 struct CEnemyState : public Component
 {
     bool isDefeated = false;
+    bool movingRight = true;
 };
 
 #endif //BREAKOUT_COMPONENTS_H
