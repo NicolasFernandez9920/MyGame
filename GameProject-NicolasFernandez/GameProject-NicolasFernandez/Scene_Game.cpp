@@ -306,7 +306,10 @@ void Scene_Game::checkEnemyCollision()
 				auto& trf = e->getComponent<CTransform>();
 
 				trf.pos.x -= overlap.x;
+
 				trf.vel.x = -trf.vel.x;
+
+				//std::cout << trf.vel.x << " velocity\n";
 
 			}
 		}
