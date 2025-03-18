@@ -1,8 +1,8 @@
 # Level 
 
-World 1280 768
+World 1920 1080
 
-Bkg city     0  768
+Bkg city     0  1080
 
 Tile hydrant 22 1
 Tile hydrant 28 1

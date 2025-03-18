@@ -1,6 +1,6 @@
 # Game Config
 
-Window 1280 768
+Window  1920 1080
 
 Font    Arial      	../assets/fonts/arial.ttf
 Font    main       	../assets/fonts/Sansation.ttf
@@ -8,7 +8,7 @@ Font    Arcade    	../assets/fonts/arcadeclassic.regular.ttf
 Font    megaman         ../assets/fonts/megaman.ttf
 
 # Textures
-Texture city            ../assets/textures/city.png
+Texture city            ../assets/textures/BKGcity.png
 Texture player          ../assets/textures/test.png
 Texture ground          ../assets/textures/ground2.png
 Texture hydrant         ../assets/textures/hydrant.png
