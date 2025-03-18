@@ -46,6 +46,7 @@ class Scene_Game : public Scene
 	void					spawnBullet(sPtrEntt entity);
 	void                    checkPlayerCollision();
 	void                    checkEnemyCollision();
+	void                    destroyFallenEntities();
 	void                    playerMovement();
 	void					protesterMovement();
 	void                    init(const std::string& levelPath);

@@ -46,6 +46,7 @@ void Scene_Game::sUpdate(sf::Time dt)
 	sCollision();
 	sMovement();
 	sLifespan();
+	destroyFallenEntities();
 }
 
 void Scene_Game::sMovement()
@@ -316,6 +317,31 @@ void Scene_Game::checkEnemyCollision()
 	}
 }
 
+
+void Scene_Game::destroyFallenEntities()
+{
+	float bottomY = _worldView.getCenter().y + _worldView.getSize().y / 2.f;
+
+	if (_player && _player->hasComponent<CTransform>()) {
+		auto& pos = _player->getComponent<CTransform>().pos;
+
+		if (pos.y > bottomY) {
+			_player->getComponent<CPlayerState>().isDead = true;
+			_player->destroy();
+		}
+	}
+
+	for (auto e : _entityManager.getEntities("protester")) {
+		if (e->hasComponent<CTransform>()) {
+			auto& pos = e->getComponent<CTransform>().pos;
+
+			if (pos.y > bottomY) {
+				e->destroy();
+			}
+		}
+	}
+}
+
 void Scene_Game::playerMovement()
 {
 	auto& pt = _player->getComponent<CTransform>();
@@ -469,7 +495,7 @@ sf::Vector2f Scene_Game::gridToMidPixel(float gridX, float gridY, sPtrEntt entit
 	// to be more generic and support scrolling up and down as well as left and right it
 	// should be based on world size not window size
 	float x = 0.f + gridX * _gridCellSize.x;
-	float y = 768.f - gridY * _gridCellSize.y;
+	float y = 1080.f - gridY * _gridCellSize.y;
 
 	auto tr = entity->getComponent<CSprite>().sprite.getTextureRect();
 	return sf::Vector2f(x + tr.width / 2.f, y - tr.height / 2.f);
@@ -590,7 +616,7 @@ void Scene_Game::sRender()
 
 
 		// row and col # of bot left
-		const int ROW0 = 768;
+		const int ROW0 = 1080;
 		int firstCol = static_cast<int>(left) / static_cast<int>(_gridCellSize.x);
 		int lastRow = static_cast<int>(bot) / static_cast<int>(_gridCellSize.y);
 
