@@ -52,6 +52,7 @@ void Scene_Game::sUpdate(sf::Time dt)
 void Scene_Game::sMovement()
 {
 	animatePlayer();
+	animateProtester();
 	playerMovement();
 
 	auto& pt = _player->getComponent<CTransform>();
@@ -59,13 +60,6 @@ void Scene_Game::sMovement()
 	// gravity
 	pt.vel.y += _playerConfig.GRAVITY;
 	pt.vel.x = pt.vel.x * _playerConfig.SPEED;
-
-	// facing direction
-	if (pt.vel.x < -0.1)
-		_player->getComponent<CState>().set(CState::isFacingLeft);
-	if (pt.vel.x > 0.1)
-		_player->getComponent<CState>().unSet(CState::isFacingLeft);
-
 
 	// move all entities
 	for (auto e : _entityManager.getEntities()) {
@@ -127,10 +121,10 @@ void Scene_Game::animateProtester()
 		auto ev = e->getComponent<CTransform>().vel;
 
 		if (ev.x < -0.1) {
-			sprite.setScale(-1.f, 1.f);
+			sprite.setScale(1.f, 1.f);
 		}
 		else if (ev.x > 0.1) {
-			sprite.setScale(1.f, 1.f);
+			sprite.setScale(-1.f, 1.f);
 		}
 
 	}
@@ -185,7 +179,7 @@ void Scene_Game::spawnBullet(sPtrEntt e)
 
 		bullet->addComponent<CSprite>(Assets::getInstance().getTexture(_playerConfig.WEAPON)).sprite;
 		bullet->addComponent<CBoundingBox>(Assets::getInstance().getTexture(_playerConfig.WEAPON).getSize());
-		bullet->addComponent<CLifespan>(50);
+		bullet->addComponent<CLifespan>(60);
 		bullet->addComponent<CTransform>(tx.pos);
 		bullet->getComponent<CTransform>().vel.x = 10 * (e->getComponent<CState>().test(CState::isFacingLeft) ? -1 : 1);
 		bullet->getComponent<CTransform>().vel.y = 0;
