@@ -77,48 +77,6 @@ void Scene_Game::sMovement()
 
 void Scene_Game::sCollision()
 {
-	// player with tile
-	auto players = _entityManager.getEntities("player");
-	auto tiles = _entityManager.getEntities("tile");
-
-	for (auto p : players) {
-		p->getComponent<CState>().unSet(CState::isGrounded); // not grounded
-		for (auto t : tiles) {
-			auto overlap = Physics::getOverlap(p, t);
-			if (overlap.x > 0 && overlap.y > 0) // +ve overlap in both x and y means collision
-			{
-				auto prevOverlap = Physics::getPreviousOverlap(p, t);
-				auto& ptx = p->getComponent<CTransform>();
-				auto ttx = t->getComponent<CTransform>();
-
-
-				// collision is in the y direction
-				if (prevOverlap.x > 0) {
-					if (ptx.prevPos.y < ttx.prevPos.y) {
-						// player standing on something isGrounded
-						p->getComponent<CTransform>().pos.y -= overlap.y;
-						p->getComponent<CInput>().canJump = true;
-						p->getComponent<CState>().set(CState::isGrounded);
-					}
-					else {
-						// player hit something from below
-						p->getComponent<CTransform>().pos.y += overlap.y;
-					}
-					p->getComponent<CTransform>().vel.y = 0.f;
-				}
-
-
-				// collision is in the x direction
-				if (prevOverlap.y > 0) {
-					if (ptx.prevPos.x < ttx.prevPos.x) // player left of tile
-						p->getComponent<CTransform>().pos.x -= overlap.x;
-					else
-						p->getComponent<CTransform>().pos.x += overlap.x;
-				}
-			}
-		}
-	}
-
 	checkPlayerCollision();
 	checkEnemyCollision();
 }
@@ -183,10 +141,6 @@ void Scene_Game::onEnd()
 }
 
 
-void Scene_Game::spawnTweet(sf::Vector2f dir)
-{
-}
-
 void Scene_Game::spawnPlayer()
 {
 	_player = _entityManager.addEntity("player");
@@ -241,6 +195,53 @@ void Scene_Game::spawnBullet(sPtrEntt e)
 
 void Scene_Game::checkPlayerCollision()
 {
+	// player with tile and wall
+	auto players = _entityManager.getEntities("player");
+
+	std::vector<std::shared_ptr<Entity>> collidableObjects = _entityManager.getEntities("tile");
+
+	auto walls = _entityManager.getEntities("wall");
+
+	collidableObjects.insert(collidableObjects.end(), walls.begin(), walls.end());
+
+	for (auto p : players) {
+		p->getComponent<CState>().unSet(CState::isGrounded); // not grounded
+		for (auto obj : collidableObjects) {
+			auto overlap = Physics::getOverlap(p, obj);
+			if (overlap.x > 0 && overlap.y > 0) // +ve overlap in both x and y means collision
+			{
+				auto prevOverlap = Physics::getPreviousOverlap(p, obj);
+				auto& ptx = p->getComponent<CTransform>();
+				auto otx = obj->getComponent<CTransform>();
+
+
+				// collision is in the y direction
+				if (prevOverlap.x > 0) {
+					if (ptx.prevPos.y < otx.prevPos.y) {
+						// player standing on something isGrounded
+						p->getComponent<CTransform>().pos.y -= overlap.y;
+						p->getComponent<CInput>().canJump = true;
+						p->getComponent<CState>().set(CState::isGrounded);
+					}
+					else {
+						// player hit something from below
+						p->getComponent<CTransform>().pos.y += overlap.y;
+					}
+					p->getComponent<CTransform>().vel.y = 0.f;
+				}
+
+
+				// collision is in the x direction
+				if (prevOverlap.y > 0) {
+					if (ptx.prevPos.x < otx.prevPos.x) // player left of tile
+						p->getComponent<CTransform>().pos.x -= overlap.x;
+					else
+						p->getComponent<CTransform>().pos.x += overlap.x;
+				}
+			}
+		}
+	}
+
 	// Collision with enemy
 	for (auto e : _entityManager.getEntities("protester")) {
 		if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)

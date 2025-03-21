@@ -41,7 +41,6 @@ class Scene_Game : public Scene
 	//helper functions
 	void                    animatePlayer();
 	void                    animateProtester();
-	void					spawnTweet(sf::Vector2f dir);
 	void                    spawnPlayer();
 	void					spawnEnemy();
 	void					spawnBullet(sPtrEntt entity);
