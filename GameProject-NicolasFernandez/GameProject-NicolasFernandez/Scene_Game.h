@@ -40,6 +40,7 @@ class Scene_Game : public Scene
 
 	//helper functions
 	void                    animatePlayer();
+	void                    animateProtester();
 	void					spawnTweet(sf::Vector2f dir);
 	void                    spawnPlayer();
 	void					spawnEnemy();
@@ -48,7 +49,6 @@ class Scene_Game : public Scene
 	void                    checkEnemyCollision();
 	void                    destroyFallenEntities();
 	void                    playerMovement();
-	void					protesterMovement();
 	void                    init(const std::string& levelPath);
 	void                    loadLevel(const std::string& path);
 	void	                registerActions();

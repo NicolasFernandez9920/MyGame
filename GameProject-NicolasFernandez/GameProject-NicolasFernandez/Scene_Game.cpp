@@ -53,7 +53,6 @@ void Scene_Game::sMovement()
 {
 	animatePlayer();
 	playerMovement();
-	protesterMovement();
 
 	auto& pt = _player->getComponent<CTransform>();
 
@@ -162,6 +161,23 @@ void Scene_Game::animatePlayer()
 
 }
 
+void Scene_Game::animateProtester()
+{
+	for (auto e : _entityManager.getEntities("protester")) {
+
+		auto& sprite = e->getComponent<CSprite>().sprite;
+		auto ev = e->getComponent<CTransform>().vel;
+
+		if (ev.x < -0.1) {
+			sprite.setScale(-1.f, 1.f);
+		}
+		else if (ev.x > 0.1) {
+			sprite.setScale(1.f, 1.f);
+		}
+
+	}
+}
+
 void Scene_Game::onEnd()
 {
 }
@@ -198,7 +214,8 @@ void Scene_Game::spawnEnemy()
 	centerOrigin(sprite);
 
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
-	enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
+	auto & tfm = enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
+	tfm.vel.x = _enemyConfig.SPEED, 0.f;
 	enemy->addComponent<CPlayerState>();
 	enemy->addComponent<CEnemyState>().isDefeated = false;
 
@@ -303,14 +320,12 @@ void Scene_Game::checkEnemyCollision()
 		for (auto h : hydrants) {
 			auto overlap = Physics::getOverlap(h, e);
 
+
 			if (overlap.x > 0 && overlap.y > 0) {
 				auto& trf = e->getComponent<CTransform>();
 
-				trf.pos.x -= overlap.x;
-
-				trf.vel.x = -trf.vel.x;
-
-				//std::cout << trf.vel.x << " velocity\n";
+				auto prevOverlap = Physics::getPreviousOverlap(h, e);
+				trf.vel.x *= -1;
 
 			}
 		}
@@ -359,15 +374,6 @@ void Scene_Game::playerMovement()
 	}
 }
 
-void Scene_Game::protesterMovement()
-{
-	auto enemies = _entityManager.getEntities("protester");
-
-	for (auto e : enemies) {
-		auto& enemyMov = e->getComponent<CTransform>();
-		enemyMov.vel = sf::Vector2f(_enemyConfig.SPEED, 0.f);
-	}
-}
 
 
 
@@ -417,7 +423,7 @@ void Scene_Game::loadLevel(const std::string& path)
 			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
 			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
 			auto pos = gridToMidPixel(gx, gy, e);
-			std::cout << entityType << " tile at (" << pos.x << ", " << pos.y << ")\n";
+			//std::cout << entityType << " tile at (" << pos.x << ", " << pos.y << ")\n";
 			e->addComponent<CTransform>(pos);
 
 
