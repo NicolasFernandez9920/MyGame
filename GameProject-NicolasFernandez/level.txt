@@ -40,17 +40,117 @@ Tile ground  29  0
 Tile ground  30  0
 
 Tile ground  33  2
-Tile ground  35  4
-Tile ground  38  4
-Tile ground  41  6
-Tile ground  46  6
+Tile ground  34  2
+Tile ground  35  2
+Tile ground  36  2
+Tile ground  37  2
+Tile ground  38  2
+Tile ground  39  2
+Tile ground  40  2
+Tile ground  41  2
+Tile ground  42  2
+Tile ground  43  2
+Tile ground  44  2
+Tile ground  45  2
+Tile ground  46  2
+Tile ground  47  2
+Tile ground  48  2
+Tile ground  49  2
+Tile ground  50  2
+Tile ground  51  2
 
-Tile ground  51  0
-Tile ground  52  0
-Tile ground  53  0
-Tile ground  54  0
-Tile ground  55  0
-Tile ground  56  0
+Tile beam    45  5
+Tile beam    45  6
+Tile beam    45  7
+Tile beam    45  8
+Tile beam    45  9
+Tile beam    45  10
+Tile beam    45  11
+Tile beam    45  12
+Tile beam    45  13
+Tile beam    45  14
+Tile beam    45  15
+Tile beam    45  16
+
+Tile ground  46  8
+Tile ground  49  5
+Tile ground  49  11
+
+Tile beam    50  3
+Tile beam    50  4
+Tile beam    50  5
+Tile beam    50  6
+Tile beam    50  7
+Tile beam    50  8
+Tile beam    50  9
+Tile beam    50  10
+Tile beam    50  11
+Tile beam    50  12
+Tile beam    50  13
+
+Tile ground  51  12
+Tile ground  52  12
+Tile ground  53  12
+Tile ground  54  12
+Tile ground  55  12
+Tile ground  56  12
+
+Tile ground  53  8
+Tile ground  54  8
+Tile ground  55  8
+Tile ground  56  8
+Tile ground  57  8
+Tile ground  58  8
+
+Tile beam    59  5
+Tile beam    59  6
+Tile beam    59  7
+Tile beam    59  8
+Tile beam    59  9
+Tile beam    59  10
+Tile beam    59  11
+Tile beam    59  12
+Tile beam    59  13
+Tile beam    59  14
+Tile beam    59  15
+Tile beam    59  16
+
+Tile ground  54  2
+Tile ground  55  2
+Tile ground  56  2
+Tile ground  57  2
+Tile ground  58  2
+Tile ground  59  2
+Tile ground  60  2
+Tile ground  61  2
+Tile ground  62  2
+Tile ground  63  2
+Tile ground  64  2
+Tile ground  65  2
+
+Tile ground  68  5
+Tile ground  69  5
+Tile ground  70  5
+
+Tile ground  73  8
+Tile ground  74  8
+Tile ground  75  8
+
+Tile ground  78  5
+Tile ground  79  5
+Tile ground  80  5
+
+Tile ground  83  2
+Tile ground  84  2
+Tile ground  85  2
+
+Tile ground  88  0
+Tile ground  89  0
+Tile ground  90  0
+Tile ground  91  0
+Tile ground  92  0
+Tile ground  93  0
+Tile ground  94  0
 
 Object redcap 10 4
 

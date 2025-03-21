@@ -12,6 +12,7 @@ Texture city            ../assets/textures/BKGcity.png
 Texture player          ../assets/textures/test.png
 Texture ground          ../assets/textures/ground2.png
 Texture hydrant         ../assets/textures/hydrant.png
+Texture beam            ../assets/textures/beam.png
 Texture enemy           ../assets/textures/enemy2.png
 Texture enemyRedCap     ../assets/textures/enemyRedCap.png
 Texture redcap          ../assets/textures/RedCapPickUp.png
