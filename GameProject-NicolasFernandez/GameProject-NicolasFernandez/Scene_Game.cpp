@@ -62,13 +62,13 @@ void Scene_Game::sMovement()
 	pt.vel.y += _playerConfig.GRAVITY;
 	pt.vel.x = pt.vel.x * _playerConfig.SPEED;
 
-	//// gravity for enemies
-	//for (auto e : _entityManager.getEntities("protester")) {
-	//	auto& tfm = e->getComponent<CTransform>();
+	// gravity for enemies
+	for (auto e : _entityManager.getEntities("protester")) {
+		auto& tfm = e->getComponent<CTransform>();
 
-	//	tfm.vel.y += _enemyConfig.GRAVITY;
-	//	tfm.vel.x = tfm.vel.x * _enemyConfig.SPEED;
-	//}
+		tfm.vel.y += _enemyConfig.GRAVITY;
+		tfm.vel.x = tfm.vel.x * _enemyConfig.SPEED;
+	}
 
 	// move all entities
 	for (auto e : _entityManager.getEntities()) {
@@ -173,7 +173,7 @@ void Scene_Game::spawnEnemy()
 	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
 	auto & tfm = enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
 	tfm.vel.x = _enemyConfig.SPEED, 0.f;
-	enemy->addComponent<CPlayerState>();
+	enemy->addComponent<CState>();
 	enemy->addComponent<CEnemyState>().isDefeated = false;
 
 
@@ -329,6 +329,53 @@ void Scene_Game::checkEnemyCollision()
 				auto prevOverlap = Physics::getPreviousOverlap(h, e);
 				trf.vel.x *= -1;
 
+			}
+		}
+	}
+
+	// enemy with tile and wall
+
+	std::vector<std::shared_ptr<Entity>> collidableObjects = _entityManager.getEntities("tile");
+
+	auto walls = _entityManager.getEntities("wall");
+
+	collidableObjects.insert(collidableObjects.end(), walls.begin(), walls.end());
+
+	for (auto e : _entityManager.getEntities("protester")) {
+		e->getComponent<CState>().unSet(CState::isGrounded);
+		for (auto obj : collidableObjects) {
+			auto& tfm = e->getComponent<CTransform>();
+
+			auto overlap = Physics::getOverlap(e, obj);
+			if (overlap.x > 0 && overlap.y > 0) // +ve overlap in both x and y means collision
+			{
+				auto prevOverlap = Physics::getPreviousOverlap(e, obj);
+				auto& etx = e->getComponent<CTransform>();
+				auto otx = obj->getComponent<CTransform>();
+
+
+				// collision is in the y direction
+				if (prevOverlap.x > 0) {
+					if (etx.prevPos.y < otx.prevPos.y) {
+						// enemy standing on something isGrounded
+						etx.pos.y -= overlap.y;
+						e->getComponent<CState>().set(CState::isGrounded);
+					}
+					else {
+						// enemy hit something from below
+						etx.pos.y += overlap.y;
+					}
+					e->getComponent<CTransform>().vel.y = 0.f;
+				}
+
+
+				// collision is in the x direction
+				if (prevOverlap.y > 0) {
+					if (etx.prevPos.x < otx.prevPos.x) // enemy left of tile
+						etx.pos.x -= overlap.x;
+					else
+						etx.pos.x += overlap.x;
+				}
 			}
 		}
 	}
