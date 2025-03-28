@@ -54,12 +54,21 @@ void Scene_Game::sMovement()
 	animatePlayer();
 	animateProtester();
 	playerMovement();
+	updateEnemiesMovement();
 
 	auto& pt = _player->getComponent<CTransform>();
 
 	// gravity
 	pt.vel.y += _playerConfig.GRAVITY;
 	pt.vel.x = pt.vel.x * _playerConfig.SPEED;
+
+	//// gravity for enemies
+	//for (auto e : _entityManager.getEntities("protester")) {
+	//	auto& tfm = e->getComponent<CTransform>();
+
+	//	tfm.vel.y += _enemyConfig.GRAVITY;
+	//	tfm.vel.x = tfm.vel.x * _enemyConfig.SPEED;
+	//}
 
 	// move all entities
 	for (auto e : _entityManager.getEntities()) {
@@ -288,9 +297,7 @@ void Scene_Game::checkEnemyCollision()
 
 			if (overlap.x > 0 && overlap.y > 0) {
 
-				if (e->hasComponent<CEnemyState>()) {
-					e->getComponent<CEnemyState>().isDefeated = true;
-				}
+				e->getComponent<CEnemyState>().isDefeated = true;
 
 				// removing enemy sprite
 				e->removeComponent<CSprite>();
@@ -366,6 +373,45 @@ void Scene_Game::playerMovement()
 	if (_player->getComponent<CInput>().up) {
 		_player->getComponent<CInput>().up = false;
 		pt.vel.y = -_playerConfig.JUMP;
+	}
+}
+
+void Scene_Game::updateEnemiesMovement()
+{
+	auto playerPos = _player->getComponent<CTransform>().pos;
+
+	for (auto e : _entityManager.getEntities("protester")) {
+		auto& tfm = e->getComponent<CTransform>();
+		auto& eState = e->getComponent<CEnemyState>();
+
+		if (eState.isDefeated) {
+			float distance = length(playerPos - tfm.pos);
+
+			// minimum distance between enemy and player
+			float minDistance = 100.f;
+
+			// maximum distance between enemy and player
+			float maxDistance = 200.f;
+
+			if (distance > maxDistance) {
+				sf::Vector2f direction = normalize(playerPos - tfm.pos);
+				float speed = 10.f;
+
+				tfm.vel = direction * speed;
+
+			}
+			else if (distance < minDistance) {
+				sf::Vector2f direction = normalize(tfm.pos - playerPos);
+				float speed = 10.f;
+
+				tfm.vel = direction * speed;
+
+			}
+			else {
+				tfm.vel = sf::Vector2f(0.f, 0.f);
+			}
+
+		}
 	}
 }
 
