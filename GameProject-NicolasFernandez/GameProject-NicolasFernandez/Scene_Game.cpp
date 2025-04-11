@@ -2,9 +2,9 @@
 #include "Components.h"
 #include "Physics.h"
 #include "Utilities.h"
-//#include "MusicPlayer.h"
+#include "MusicPlayer.h"
 #include "Assets.h"
-//#include "SoundPlayer.h"
+#include "SoundPlayer.h"
 #include "GameEngine.h"
 
 
@@ -28,18 +28,46 @@ void Scene_Game::init(const std::string& levelPath)
 
 	loadLevel(levelPath);
 
-
 	sf::Vector2f view{ _worldView.getSize().x / 2.f, _worldBounds.height - _worldView.getSize().y / 2.f };
 
 	_worldView.setCenter(view);
 
 	spawnPlayer();
-	spawnEnemy();
+	spawnEnemies();
+
+	_counterTexture.loadFromFile("../assets/textures/enemyRedCapHead.png");
+	if (!_counterTexture.loadFromFile("../assets/textures/enemyRedCapHead.png")) {
+		std::cout << "texture not found\n";
+	}
+
+	_counterFont.loadFromFile("../assets/fonts/PressStart2P-vaV7.ttf");
+	if (!_counterFont.loadFromFile("../assets/fonts/PressStart2P-vaV7.ttf")) {
+		std::cout << "font not found\n";
+	}
+
+	_counterIcon.setTexture(_counterTexture);
+	_counterIcon.setPosition(30.f, 30.f);
+
+	_counterText.setFont(_counterFont);
+	_counterText.setCharacterSize(40);
+	_counterText.setFillColor(sf::Color::White);
+
+	MusicPlayer::getInstance().play("gameTheme");
+	MusicPlayer::getInstance().setVolume(5);
 
 }
 
 void Scene_Game::sUpdate(sf::Time dt)
 {
+	const sf::Time SPF = sf::seconds(1.0f / 60.f);
+
+	if (_isPaused) return;
+
+	if (_levelCompleted) {
+		_levelCompleteTimer += SPF.asSeconds();
+		return;
+	}
+
 	_entityManager.update();
 
 	sAnimation(dt);
@@ -47,6 +75,7 @@ void Scene_Game::sUpdate(sf::Time dt)
 	sMovement();
 	sLifespan();
 	destroyFallenEntities();
+	checkIfPlayerIsDead();
 }
 
 void Scene_Game::sMovement()
@@ -55,20 +84,22 @@ void Scene_Game::sMovement()
 	animateProtester();
 	playerMovement();
 	updateEnemiesMovement();
+	platformMovement();
 
 	auto& pt = _player->getComponent<CTransform>();
 
 	// gravity
 	pt.vel.y += _playerConfig.GRAVITY;
+
+	// player movement
 	pt.vel.x = pt.vel.x * _playerConfig.SPEED;
 
-	// gravity for enemies
-	for (auto e : _entityManager.getEntities("protester")) {
-		auto& tfm = e->getComponent<CTransform>();
+	 //gravity for enemies
+		for (auto e : _entityManager.getEntities("protester")) {
+			auto& tfm = e->getComponent<CTransform>();
+			tfm.vel.y += _enemiesConfig[0].GRAVITY;
+		}
 
-		tfm.vel.y += _enemyConfig.GRAVITY;
-		tfm.vel.x = tfm.vel.x * _enemyConfig.SPEED;
-	}
 
 	// move all entities
 	for (auto e : _entityManager.getEntities()) {
@@ -77,6 +108,8 @@ void Scene_Game::sMovement()
 		tx.pos += tx.vel;
 	}
 }
+
+
 
 void Scene_Game::sCollision()
 {
@@ -115,10 +148,15 @@ void Scene_Game::animatePlayer()
 	auto& sprite = _player->getComponent<CSprite>().sprite;
 	auto pv = _player->getComponent<CTransform>().vel;
 
-	if (pv.x < -0.1)
+	if (pv.x < -0.1) {
 		sprite.setScale(-1.f, 1.f);
-	else if (pv.x > 0.1)
+		_player->getComponent<CState>().set(CState::isFacingLeft);
+
+	}
+	else if (pv.x > 0.1) {
 		sprite.setScale(1.f, 1.f);
+		_player->getComponent<CState>().unSet(CState::isFacingLeft);
+	}
 
 }
 
@@ -160,24 +198,26 @@ void Scene_Game::spawnPlayer()
 	_player->addComponent<CPlayerState>();
 }
 
-void Scene_Game::spawnEnemy()
+void Scene_Game::spawnEnemies()
 {
-	auto enemy = _entityManager.addEntity("protester");
 
+	for (const auto& enemyConfig : _enemiesConfig) {
 
-	auto& sr = Assets::getInstance().getSpriteRec("protesterEnemy");
-	auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
-	sprite.setTextureRect(sr.texRect);
-	centerOrigin(sprite);
+		auto enemy = _entityManager.addEntity("protester");
 
-	enemy->addComponent<CBoundingBox>(sf::Vector2f(_enemyConfig.CW, _enemyConfig.CH));
-	auto & tfm = enemy->addComponent<CTransform>(gridToMidPixel(_enemyConfig.X, _enemyConfig.Y, enemy));
-	tfm.vel.x = _enemyConfig.SPEED, 0.f;
-	enemy->addComponent<CState>();
-	enemy->addComponent<CEnemyState>().isDefeated = false;
+		auto& sr = Assets::getInstance().getSpriteRec("protesterEnemy");
+		auto& sprite = enemy->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+		sprite.setTextureRect(sr.texRect);
+		centerOrigin(sprite);
 
-
+		enemy->addComponent<CBoundingBox>(sf::Vector2f(enemyConfig.CW, enemyConfig.CH));
+		auto& tfm = enemy->addComponent<CTransform>(gridToMidPixel(enemyConfig.X, enemyConfig.Y, enemy));
+		tfm.vel.x = enemyConfig.SPEED;
+		enemy->addComponent<CEnemyState>().isDefeated = false;
+		enemy->addComponent<CInput>();
+	}
 }
+
 
 void Scene_Game::spawnBullet(sPtrEntt e)
 {
@@ -192,20 +232,21 @@ void Scene_Game::spawnBullet(sPtrEntt e)
 		bullet->addComponent<CTransform>(tx.pos);
 		bullet->getComponent<CTransform>().vel.x = 10 * (e->getComponent<CState>().test(CState::isFacingLeft) ? -1 : 1);
 		bullet->getComponent<CTransform>().vel.y = 0;
-
 	}
 }
 
 void Scene_Game::checkPlayerCollision()
 {
-	// player with tile and wall
+	// player with collidable objects
 	auto players = _entityManager.getEntities("player");
 
 	std::vector<std::shared_ptr<Entity>> collidableObjects = _entityManager.getEntities("tile");
 
 	auto walls = _entityManager.getEntities("wall");
+	auto platform = _entityManager.getEntities("platform");
 
 	collidableObjects.insert(collidableObjects.end(), walls.begin(), walls.end());
+	collidableObjects.insert(collidableObjects.end(), platform.begin(), platform.end());
 
 	for (auto p : players) {
 		p->getComponent<CState>().unSet(CState::isGrounded); // not grounded
@@ -225,6 +266,11 @@ void Scene_Game::checkPlayerCollision()
 						p->getComponent<CTransform>().pos.y -= overlap.y;
 						p->getComponent<CInput>().canJump = true;
 						p->getComponent<CState>().set(CState::isGrounded);
+
+						// if object is platfrom, the player moves with it
+						if (obj->getTag() == "platform") {
+							p->getComponent<CTransform>().pos.y += otx.vel.y;
+						}
 					}
 					else {
 						// player hit something from below
@@ -246,22 +292,52 @@ void Scene_Game::checkPlayerCollision()
 	}
 
 	// Collision with enemy
-	for (auto e : _entityManager.getEntities("protester")) {
-		if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)
-			continue; // it doesn't kill the player if enemy is defeated
+		for (auto e : _entityManager.getEntities("protester")) {
+			if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)
+				continue; // it doesn't kill the player if enemy is defeated
 
-		auto overlap = Physics::getOverlap(_player, e);
+			auto overlap = Physics::getOverlap(_player, e);
 
-		if (overlap.x > 0 && overlap.y > 0) {
+			if (overlap.x > 0 && overlap.y > 0) {
 
-			_player->getComponent<CPlayerState>().isDead = true;
-			_player->destroy();
+				_player->getComponent<CPlayerState>().isDead = true;
+				_player->destroy();
+			}
 		}
-	}
+
+		// Collision with spikes
+		for (auto s : _entityManager.getEntities("spike")) {
+
+			auto overlap = Physics::getOverlap(_player, s);
+
+			if (overlap.x > 0 && overlap.y > 0) {
+
+				_player->getComponent<CPlayerState>().isDead = true;
+				_player->destroy();
+			}
+		}
+
+		// Collision with door
+		// player spawn point 244, 5
+		if (_counter == 1) {
+			for (auto d : _entityManager.getEntities("door")) {
+
+				auto overlap = Physics::getOverlap(_player, d);
+
+				if (overlap.x > 0 && overlap.y > 0) {
+
+					_levelCompleted = true;
+					_levelCompleteTimer = 0.f;
+				}
+			}
+		}
+
+
 
 	// Collision with pickup
 	for (auto e : _entityManager.getEntities("object")) {
 		auto overlap = Physics::getOverlap(_player, e);
+		auto& tfm = _player->getComponent<CTransform>();
 
 		if (overlap.x > 0 && overlap.y > 0) {
 
@@ -274,13 +350,13 @@ void Scene_Game::checkPlayerCollision()
 			sprite.setTextureRect(sr.texRect);
 			centerOrigin(sprite);
 
-
 			// activate weapon
 			_player->getComponent<CInput>().hasWeapon = true;
 
 			// destroy pickup
 			e->destroy();
 
+			SoundPlayer::getInstance().play("pickup", tfm.pos);
 		}
 	}
 }
@@ -290,30 +366,35 @@ void Scene_Game::checkEnemyCollision()
 	auto bullets = _entityManager.getEntities("bullet");
 
 	// collision with bullets
+		for (auto e : _entityManager.getEntities("protester")) {
+			for (auto b : bullets) {
+				if (e->hasComponent<CEnemyState>() && e->getComponent<CEnemyState>().isDefeated)
+					continue;
 
-	for (auto e : _entityManager.getEntities("protester")) {
-		for (auto b : bullets) {
-			auto overlap = Physics::getOverlap(b, e);
+				auto overlap = Physics::getOverlap(b, e);
 
-			if (overlap.x > 0 && overlap.y > 0) {
+				if (overlap.x > 0 && overlap.y > 0) {
 
-				e->getComponent<CEnemyState>().isDefeated = true;
+					// removing enemy sprite
+					e->removeComponent<CSprite>();
 
-				// removing enemy sprite
-				e->removeComponent<CSprite>();
+					// adding new sprite
+					auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
+					auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
+					sprite.setTextureRect(sr.texRect);
+					centerOrigin(sprite);
 
-				// adding new sprite
-				auto& sr = Assets::getInstance().getSpriteRec("newEnemy");
-				auto& sprite = e->addComponent<CSprite>(Assets::getInstance().getTexture(sr.texName)).sprite;
-				sprite.setTextureRect(sr.texRect);
-				centerOrigin(sprite);
+					// destroy bullet
+					b->destroy();
 
-				// destroy bullet
-				b->destroy();
+					if (!e->getComponent<CEnemyState>().isDefeated) {
+						_counter++;
+						e->getComponent<CEnemyState>().isDefeated = true;
+					}
+
+				}
 			}
 		}
-
-	}
 
 	// collision with hydrants
 	auto hydrants = _entityManager.getEntities("wall");
@@ -333,13 +414,30 @@ void Scene_Game::checkEnemyCollision()
 		}
 	}
 
-	// enemy with tile and wall
+	// collision with spikes
+	auto spikes = _entityManager.getEntities("spike");
+
+	for (auto e : _entityManager.getEntities("protester")) {
+		for (auto s : spikes) {
+			auto overlap = Physics::getOverlap(s, e);
+
+			if (overlap.x > 0 && overlap.y > 0) {
+
+				e->destroy();
+				_counter--;
+			}
+		}
+	}
+
+	// enemy with collidable objects
 
 	std::vector<std::shared_ptr<Entity>> collidableObjects = _entityManager.getEntities("tile");
 
 	auto walls = _entityManager.getEntities("wall");
+	auto platform = _entityManager.getEntities("platform");
 
 	collidableObjects.insert(collidableObjects.end(), walls.begin(), walls.end());
+	collidableObjects.insert(collidableObjects.end(), platform.begin(), platform.end());
 
 	for (auto e : _entityManager.getEntities("protester")) {
 		e->getComponent<CState>().unSet(CState::isGrounded);
@@ -357,13 +455,23 @@ void Scene_Game::checkEnemyCollision()
 				// collision is in the y direction
 				if (prevOverlap.x > 0) {
 					if (etx.prevPos.y < otx.prevPos.y) {
+						auto& input = e->getComponent<CInput>();
+
 						// enemy standing on something isGrounded
 						etx.pos.y -= overlap.y;
+
+						input.canJump = true;
+
 						e->getComponent<CState>().set(CState::isGrounded);
+
+						if (obj->getTag() == "platform") {
+							etx.pos.y += otx.vel.y;
+						}
+
 					}
 					else {
 						// enemy hit something from below
-						etx.pos.y += overlap.y;
+						etx.pos.y -= overlap.y;
 					}
 					e->getComponent<CTransform>().vel.y = 0.f;
 				}
@@ -376,8 +484,17 @@ void Scene_Game::checkEnemyCollision()
 					else
 						etx.pos.x += overlap.x;
 				}
+
 			}
+
 		}
+	}
+}
+
+void Scene_Game::checkIfPlayerIsDead()
+{
+	if (_player->getComponent<CPlayerState>().isDead) {
+		_game->quitLevel();
 	}
 }
 
@@ -401,9 +518,23 @@ void Scene_Game::destroyFallenEntities()
 
 			if (pos.y > bottomY) {
 				e->destroy();
+				_counter--;
 			}
 		}
 	}
+}
+
+void Scene_Game::enemyCounter()
+{
+	_counterText.setString("X " + std::to_string(_counter) + " / 1");
+	_counterText.setPosition(
+		_counterIcon.getPosition().x + _counterIcon.getLocalBounds().width + 20.f,
+		_counterIcon.getPosition().y + 15.f
+	);
+
+	_game->window().draw(_counterIcon);
+	_game->window().draw(_counterText);
+
 }
 
 void Scene_Game::playerMovement()
@@ -423,42 +554,114 @@ void Scene_Game::playerMovement()
 	}
 }
 
+void Scene_Game::platformMovement()
+{
+	float speed = 2.2f;
+	float range = 325.f;
+
+	for (auto e : _entityManager.getEntities("platform")) {
+		auto& trf = e->getComponent<CTransform>();
+
+		if (trf.vel.y == 0) {
+			trf.vel.y = speed;
+		}
+
+		trf.pos.y += trf.vel.y;
+
+		if (trf.pos.y > trf.startPos.y + range || trf.pos.y < trf.startPos.y - range) {
+			trf.vel.y *= -1;
+		}
+	}
+}
+
 void Scene_Game::updateEnemiesMovement()
 {
+	const sf::Time SPF = sf::seconds(1.0f / 60.f);
 	auto playerPos = _player->getComponent<CTransform>().pos;
+	auto& playerTfm = _player->getComponent<CTransform>();
 
 	for (auto e : _entityManager.getEntities("protester")) {
 		auto& tfm = e->getComponent<CTransform>();
 		auto& eState = e->getComponent<CEnemyState>();
+		auto& input = e->getComponent<CInput>();
 
 		if (eState.isDefeated) {
 			float distance = length(playerPos - tfm.pos);
 
-			// minimum distance between enemy and player
-			float minDistance = 100.f;
 
-			// maximum distance between enemy and player
-			float maxDistance = 200.f;
+			if (playerTfm.vel.y < 0) {
 
-			if (distance > maxDistance) {
-				sf::Vector2f direction = normalize(playerPos - tfm.pos);
-				float speed = 10.f;
+				static float timeToJump = 0.0f;
+				timeToJump += SPF.asSeconds();
 
-				tfm.vel = direction * speed;
-
-			}
-			else if (distance < minDistance) {
-				sf::Vector2f direction = normalize(tfm.pos - playerPos);
-				float speed = 10.f;
-
-				tfm.vel = direction * speed;
+				if (timeToJump > 0.35f) {
+					if (input.canJump) {
+							tfm.vel.y = -_enemiesConfig[0].JUMP;
+							input.canJump = false;
+							timeToJump = 0.0f;
+					}
+				}
 
 			}
-			else {
-				tfm.vel = sf::Vector2f(0.f, 0.f);
-			}
+				// minimum distance between enemy and player
+				float minDistance = 1.f;
 
+				// maximum distance between enemy and player
+				float maxDistance = 80.f;
+
+				if (distance > maxDistance) {
+					sf::Vector2f direction = normalize(playerPos - tfm.pos);
+					float speed = 10.f;
+
+					tfm.vel.x = direction.x * speed;
+				}
+				else if (distance < minDistance) {
+					sf::Vector2f direction = normalize(tfm.pos - playerPos);
+					float speed = 10.f;
+
+					tfm.vel.x = direction.x * speed;
+				}
+				else {
+					tfm.vel.x = 0.f;
+				}
 		}
+	}
+}
+
+void Scene_Game::winning()
+{
+	const sf::Time SPF = sf::seconds(1.0f / 60.f);
+
+	//
+	sf::View currentView = _game->window().getView();
+	_game->window().setView(_game->window().getDefaultView());
+	//
+
+	sf::RectangleShape fade(sf::Vector2f(_game->window().getSize()));
+	fade.setFillColor(sf::Color(0, 0, 0, std::min(200.f, _levelCompleteTimer * 100)));
+	_game->window().draw(fade);
+
+	if (_levelCompleteTimer > 1.f) {
+		sf::Text text;
+		text.setFont(_counterFont);
+		text.setCharacterSize(55);
+		text.setFillColor(sf::Color::White);
+		text.setString("LEVEL COMPLETE!");
+		centerOrigin(text);
+		text.setPosition(_game->window().getSize().x / 2.f, _game->window().getSize().y / 2.f - 40);
+		_game->window().draw(text);
+
+		sf::Text menu;
+		menu.setFont(_counterFont);
+		menu.setCharacterSize(35);
+		menu.setFillColor(sf::Color::White);
+		menu.setString("Press Enter to go to Menu\n\nPress Esc to Quit");
+		centerOrigin(menu);
+		menu.setPosition(_game->window().getSize().x / 2.f, _game->window().getSize().y / 2.f + 100);
+		_game->window().draw(menu);
+
+		//
+		_game->window().setView(currentView);
 	}
 }
 
@@ -474,6 +677,7 @@ void Scene_Game::loadLevel(const std::string& path)
 		config.close();
 		exit(1);
 	}
+
 
 	std::string token{ "" };
 	config >> token;
@@ -530,6 +734,55 @@ void Scene_Game::loadLevel(const std::string& path)
 
 
 		}
+		else if (token == "Obstacle") {
+			std::string name;
+			float gx, gy;
+			config >> name >> gx >> gy;
+
+			auto e = _entityManager.addEntity("spike");
+
+			auto texSize = Assets::getInstance().getTexture(name).getSize();
+			sf::Vector2f adjustedSize(texSize.x * 0.4f, texSize.y);
+
+			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			e->addComponent<CBoundingBox>(adjustedSize);
+			auto pos = gridToMidPixel(gx, gy, e);
+			e->addComponent<CTransform>(pos);
+
+		}
+		else if (token == "Lift") {
+			std::string name;
+			float gx, gy;
+			config >> name >> gx >> gy;
+
+			auto e = _entityManager.addEntity("platform");
+			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
+			auto pos = gridToMidPixel(gx, gy, e);
+			e->addComponent<CTransform>(pos);
+
+		}
+		else if (token == "Dec") {
+			std::string name;
+			float gx, gy;
+			config >> name >> gx >> gy;
+
+			auto e = _entityManager.addEntity("dec");
+			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			auto pos = gridToMidPixel(gx, gy, e);
+			e->addComponent<CTransform>(pos);
+		}
+		else if (token == "End") {
+			std::string name;
+			float gx, gy;
+			config >> name >> gx >> gy;
+
+			auto e = _entityManager.addEntity("door");
+			e->addComponent<CSprite>(Assets::getInstance().getTexture(name)).sprite;
+			e->addComponent<CBoundingBox>(Assets::getInstance().getTexture(name).getSize());
+			auto pos = gridToMidPixel(gx, gy, e);
+			e->addComponent<CTransform>(pos);
+		}
 		else if (token == "Player") {
 			config >>
 				_playerConfig.X >>
@@ -543,15 +796,18 @@ void Scene_Game::loadLevel(const std::string& path)
 				_playerConfig.WEAPON;
 		}
 		else if (token == "Enemy") {
+			EnemyConfig newEnemyConfig{};
 			config >>
-				_enemyConfig.X >>
-				_enemyConfig.Y >>
-				_enemyConfig.CW >>
-				_enemyConfig.CH >>
-				_enemyConfig.SPEED >>
-				_enemyConfig.JUMP >>
-				_enemyConfig.MAXSPEED >>
-				_enemyConfig.GRAVITY;
+				newEnemyConfig.X >>
+				newEnemyConfig.Y >>
+				newEnemyConfig.CW >>
+				newEnemyConfig.CH >>
+				newEnemyConfig.SPEED >>
+				newEnemyConfig.JUMP >>
+				newEnemyConfig.MAXSPEED >>
+				newEnemyConfig.GRAVITY;
+
+			_enemiesConfig.push_back(newEnemyConfig);
 		}
 		else if (token == "World") {
 			config >> _worldBounds.width >> _worldBounds.height;
@@ -568,6 +824,7 @@ void Scene_Game::registerActions()
 	registerAction(sf::Keyboard::P, "PAUSE");
 	registerAction(sf::Keyboard::Escape, "BACK");
 	registerAction(sf::Keyboard::Q, "QUIT");
+	registerAction(sf::Keyboard::Enter, "CONFIRM");
 	registerAction(sf::Keyboard::C, "TOGGLE_COLLISION");
 	registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");
 	registerAction(sf::Keyboard::G, "TOGGLE_GRID");
@@ -603,10 +860,18 @@ void Scene_Game::update(sf::Time dt)
 
 void Scene_Game::sDoAction(const Command& command)
 {
+	if (_levelCompleted) {
+		if (command.type() == "START" && command.name() == "CONFIRM" && _levelCompleteTimer >= 2.f) {
+			_game->quitLevel();
+		}
+		return;
+	}
+
 	// On Key Press
 	if (command.type() == "START") {
 		if (command.name() == "PAUSE") { setPaused(!_isPaused); }
 		else if (command.name() == "QUIT") { _game->quitLevel(); }
+		else if (command.name() == "BACK") { _game->window().close(); }
 
 		else if (command.name() == "TOGGLE_TEXTURE") { _drawTextures = !_drawTextures; }
 		else if (command.name() == "TOGGLE_COLLISION") { _drawAABB = !_drawAABB; }
@@ -617,9 +882,17 @@ void Scene_Game::sDoAction(const Command& command)
 		else if (command.name() == "RIGHT") { _player->getComponent<CInput>().right = true; }
 
 		else if (command.name() == "JUMP") {
-			if (_player->getComponent<CInput>().canJump && _player->getComponent<CState>().test(CState::isGrounded)) {
-				_player->getComponent<CInput>().up = true;
-				_player->getComponent<CInput>().canJump = false;
+			auto& input = _player->getComponent<CInput>();
+			auto& state = _player->getComponent<CState>();
+
+			if (input.canJump && state.test(CState::isGrounded)) {
+				input.up = true;
+				input.canJump = false;
+
+				auto& tfm = _player->getComponent<CTransform>();
+				//_playerJumpPoints.push_back(tfm.pos);
+
+				//SoundPlayer::getInstance().play("jump", tfm.pos);
 			}
 		}
 		else if (command.name() == "SHOOT") {
@@ -627,6 +900,10 @@ void Scene_Game::sDoAction(const Command& command)
 				spawnBullet(_player);
 				_player->getComponent<CInput>().shoot = true;
 				_player->getComponent<CInput>().canShoot = false;
+
+				auto& tfm = _player->getComponent<CTransform>();
+
+				SoundPlayer::getInstance().play("shoot", tfm.pos);
 			}
 		}
 	}
@@ -643,7 +920,6 @@ void Scene_Game::sDoAction(const Command& command)
 
 void Scene_Game::sRender()
 {
-
 	_game->window().clear(sf::Color(201, 144, 189));
 
 	// set the view to center on the player
@@ -663,9 +939,7 @@ void Scene_Game::sRender()
 		}
 	}
 
-
 	for (auto& e : _entityManager.getEntities()) {
-
 
 		if (!e->hasComponent<CSprite>() || e->getTag() == "bkg")
 			continue;
@@ -676,7 +950,6 @@ void Scene_Game::sRender()
 			sprite.setPosition(tfm.pos);
 			sprite.setRotation(tfm.angle);
 			_game->window().draw(sprite);
-
 
 			// Draw Collision box
 			if (_drawAABB && e->hasComponent<CBoundingBox>()) {
@@ -708,7 +981,6 @@ void Scene_Game::sRender()
 		int nCols = static_cast<int>(view.getSize().x) / _gridCellSize.x;
 		int nRows = static_cast<int>(view.getSize().y) / _gridCellSize.y;
 
-
 		// row and col # of bot left
 		const int ROW0 = 1080;
 		int firstCol = static_cast<int>(left) / static_cast<int>(_gridCellSize.x);
@@ -730,7 +1002,6 @@ void Scene_Game::sRender()
 			lines.append(sf::Vertex(sf::Vector2f(right, ROW0 - (lastRow - y) * _gridCellSize.y)));
 		}
 
-
 		// grid coordinates
 		// (firstCol, lastRow) is the bottom left corner of the view
 		for (int x{ 0 }; x <= nCols; ++x) {
@@ -743,7 +1014,16 @@ void Scene_Game::sRender()
 			}
 		}
 
-
 		_game->window().draw(lines);
 	}
+
+	sf::View worldView = _game->window().getView();
+	_game->window().setView(_game->window().getDefaultView());
+	enemyCounter();
+	_game->window().setView(worldView);
+
+	if (_levelCompleted) {
+		winning();
+	}
+
 }

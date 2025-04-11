@@ -4,8 +4,15 @@ World 1920 1080
 
 Bkg city     0  1080
 
+Object redcap 10 4
+
 Tile hydrant 22 1
 Tile hydrant 28 1
+Tile hydrant 38 3
+Tile hydrant 49 3
+Tile hydrant 134 1
+Tile hydrant 142 1
+Tile hydrant 149 1
 
 Tile ground  0  0
 Tile ground  1  0
@@ -58,22 +65,31 @@ Tile ground  48  2
 Tile ground  49  2
 Tile ground  50  2
 Tile ground  51  2
+Tile ground  52  2
 
-Tile beam    45  5
-Tile beam    45  6
-Tile beam    45  7
-Tile beam    45  8
-Tile beam    45  9
-Tile beam    45  10
-Tile beam    45  11
-Tile beam    45  12
-Tile beam    45  13
-Tile beam    45  14
-Tile beam    45  15
-Tile beam    45  16
+Tile beam    42  5
+Tile beam    42  6
+Tile beam    42  7
+Tile beam    42  8
+Tile beam    42  9
+Tile beam    42  10
+Tile beam    42  11
+Tile beam    42  12
+Tile beam    42  13
+Tile beam    42  14
+Tile beam    42  15
+Tile beam    42  16
 
-Tile ground  46  8
+Tile ground  43  8
+Tile ground  44  8
+Tile ground  45  8
+
+Tile ground  47  5
+Tile ground  48  5
 Tile ground  49  5
+
+Tile ground  47  11
+Tile ground  48  11
 Tile ground  49  11
 
 Tile beam    50  3
@@ -115,7 +131,6 @@ Tile beam    59  14
 Tile beam    59  15
 Tile beam    59  16
 
-Tile ground  54  2
 Tile ground  55  2
 Tile ground  56  2
 Tile ground  57  2
@@ -152,8 +167,399 @@ Tile ground  92  0
 Tile ground  93  0
 Tile ground  94  0
 
-Object redcap 10 4
+Tile beam    99   0
+Tile beam    100  0
+
+Tile ground  98   1
+Tile ground  99   1
+Tile ground  100  1
+Tile ground  101  1
+
+Tile beam    103  0
+Tile beam    103  1
+Tile beam    103  2
+Tile beam    103  3
+
+Tile beam    104  0
+Tile beam    104  1
+Tile beam    104  2
+Tile beam    104  3
+
+Tile ground  102  4
+Tile ground  103  4
+Tile ground  104  4
+Tile ground  105  4
+
+Tile beam    108  0
+Tile beam    108  1
+Tile beam    108  2
+Tile beam    108  3
+Tile beam    108  4
+Tile beam    108  5
+Tile beam    108  6
+
+Tile beam    109  0
+Tile beam    109  1
+Tile beam    109  2
+Tile beam    109  3
+Tile beam    109  4
+Tile beam    109  5
+Tile beam    109  6
+
+Tile beam    110  0
+Tile beam    110  1
+Tile beam    110  2
+Tile beam    110  3
+Tile beam    110  4
+Tile beam    110  5
+Tile beam    110  6
+
+Tile ground  107  7
+Tile ground  108  7
+Tile ground  109  7
+Tile ground  110  7
+Tile ground  111  7
+
+Tile beam    116  0
+Tile beam    116  1
+Tile beam    116  2
+
+Tile beam    117  0
+Tile beam    117  1
+Tile beam    117  2
+
+Tile ground  115  3
+Tile ground  116  3
+Tile ground  117  3
+Tile ground  118  3
+
+Lift platform 122 6
+
+Tile ground  131  0
+Tile ground  132  0
+Tile ground  133  0
+Tile ground  134  0
+Tile ground  135  0
+Tile ground  136  0
+Tile ground  137  0
+Tile ground  138  0
+Tile ground  139  0
+Tile ground  140  0
+Tile ground  141  0
+Tile ground  142  0
+Tile ground  143  0
+Tile ground  144  0
+Tile ground  145  0
+Tile ground  146  0
+Tile ground  147  0
+Tile ground  148  0
+Tile ground  149  0
+Tile ground  150  0
+Tile ground  151  0
+
+Tile ground  132  1
+Tile ground  133  2
+Tile ground  134  3
+Tile ground  135  4
+Tile ground  136  5
+Tile ground  137  6
+Tile ground  138  7
+Tile ground  139  8
+Tile ground  140  9
+Tile ground  141  9
+Tile ground  142  9
+
+Tile ground  135  3
+Tile ground  136  3
+Tile ground  137  3
+Tile ground  138  3
+Tile ground  139  3
+Tile ground  140  3
+
+Tile ground  143  6
+Tile ground  144  6
+Tile ground  145  6
+
+Tile beam    146  4
+Tile beam    146  5
+Tile beam    146  6
+Tile beam    146  7
+Tile beam    146  8
+Tile beam    146  9
+Tile beam    146  10
+Tile beam    146  11
+Tile beam    146  12
+Tile beam    146  13
+Tile beam    146  14
+Tile beam    146  15
+Tile beam    146  16
+
+Tile beam  153  0
+Tile beam  154  0
+Tile beam  155  0
+Tile beam  156  0
+
+Tile ground  152  0
+Tile ground  153  1
+Tile ground  154  2
+Tile ground  155  3
+Tile ground  156  4
+
+Tile beam  154  1
+Tile beam  155  1
+Tile beam  155  2
+Tile beam  156  1
+Tile beam  156  2
+Tile beam  156  3
+
+Tile beam  160  0
+Tile beam  160  1
+Tile beam  160  2
+Tile beam  160  3
+Tile beam  160  4
+
+Tile beam  161  0
+Tile beam  161  1
+Tile beam  161  2
+Tile beam  161  3
+Tile beam  162  0
+Tile beam  162  1
+Tile beam  162  2
+Tile beam  163  0
+Tile beam  163  1
+Tile beam  164  0
+
+Tile ground  160  5
+Tile ground  161  4
+Tile ground  162  3
+Tile ground  163  2
+Tile ground  164  1
+Tile ground  165  0
+Tile ground  166  0
+Tile ground  167  0
+Tile ground  168  0
+Tile ground  169  0
+Tile ground  170  0
+Tile ground  171  0
+Tile ground  172  0
+Tile ground  173  0
+Tile ground  174  0
+Tile ground  175  0
+Tile ground  176  0
+Tile ground  177  0
+Tile ground  178  0
+Tile ground  179  0
+Tile ground  180  0
+Tile ground  181  0
+
+Obstacle spike 170 1
+Obstacle spike 173 1
+Obstacle spike 176 1
+Obstacle spike 179 1
+
+Tile ground  182  1
+Tile ground  183  2
+Tile ground  184  3
+Tile ground  185  4
+Tile ground  186  4
+Tile ground  187  4
+Tile ground  188  4
+Tile ground  189  4
+Tile ground  190  4
+Tile ground  191  4
+Tile ground  192  4
+Tile ground  193  4
+Tile ground  194  4
+Tile ground  195  4
+
+Tile beam  188  0
+Tile beam  188  1
+Tile beam  188  2
+Tile beam  188  3
+Tile beam  187  2
+Tile beam  186  3
+Tile beam  189  2
+Tile beam  190  3
+
+Tile beam  189  11
+Tile beam  189  12
+Tile beam  189  13
+Tile beam  189  14
+Tile beam  189  15
+Tile beam  189  16
+
+Tile beam  193  11
+Tile beam  193  12
+Tile beam  193  13
+Tile beam  193  14
+Tile beam  193  15
+Tile beam  193  16
+
+Tile beam  197  11
+Tile beam  197  12
+Tile beam  197  13
+Tile beam  197  14
+Tile beam  197  15
+Tile beam  197  16
+
+Obstacle spike 187 5
+Obstacle spike 191 5
+Obstacle spike 195 5
+
+Obstacle spikeDown 189 10
+Obstacle spikeDown 193 10
+Obstacle spikeDown 197 10
+
+Tile ground  196  4
+Tile ground  197  4
+Tile ground  198  4
+Tile ground  199  4
+Tile ground  200  4
+Tile ground  201  4
+
+Tile beam  195  3
+Tile beam  196  2
+Tile beam  197  0
+Tile beam  197  1
+Tile beam  197  2
+Tile beam  197  3
+Tile beam  198  2
+Tile beam  199  3
+
+Lift platform 205 6
+
+Tile ground  214  7
+Tile ground  215  7
+Tile ground  216  7
+
+Tile ground  219  9
+Tile ground  220  9
+Tile ground  221  9
+
+Tile ground  213  6
+Tile ground  218  8
+
+Obstacle spike 213 7
+Obstacle spike 218 9
+
+Tile ground  224  4
+Tile ground  225  4
+Tile ground  226  4
+Tile ground  227  4
+Tile ground  228  4
+Tile ground  229  4
+Tile ground  230  4
+
+Tile ground  232  4
+Tile ground  233  4
+Tile ground  234  4
+Tile ground  235  4
+Tile ground  236  4
+Tile ground  237  4
+Tile ground  238  4
+Tile ground  239  4
+Tile ground  240  4
+
+Tile beam  232  0
+Tile beam  232  1
+Tile beam  232  2
+Tile beam  232  3
+Tile beam  233  2
+Tile beam  234  3
+
+Obstacle spike 224 5
+Obstacle spike 230 5
+
+Tile ground  241  4
+Tile ground  242  4
+Tile ground  243  4
+Tile ground  244  4
+Tile ground  245  4
+Tile ground  246  4
+Tile ground  247  4
+Tile ground  248  4
+Tile ground  249  4
+Tile ground  250  4
+Tile ground  251  4
+Tile ground  252  4
+Tile ground  253  4
+Tile ground  254  4
+Tile ground  255  4
+Tile ground  256  4
+Tile ground  257  4
+Tile ground  258  4
+Tile ground  259  4
+Tile ground  260  4
+Tile ground  261  4
+Tile ground  262  4
+Tile ground  263  4
+Tile ground  264  4
+Tile ground  265  4
+Tile ground  266  4
+Tile ground  267  4
+Tile ground  268  4
+Tile ground  269  4
+Tile ground  270  4
+Tile ground  271  4
+Tile ground  272  4
+Tile ground  273  4
+Tile ground  274  4
+Tile ground  275  4
+Tile ground  276  4
+Tile ground  277  4
+Tile ground  278  4
+Tile ground  279  4
+Tile ground  280  4
+Tile ground  281  4
+
+Tile beam  243  3
+Tile beam  244  2
+Tile beam  245  0
+Tile beam  245  1
+Tile beam  245  2
+Tile beam  245  3
+Tile beam  246  2
+Tile beam  247  3
+
+Tile beam  256  3
+Tile beam  257  2
+Tile beam  258  0
+Tile beam  258  1
+Tile beam  258  2
+Tile beam  258  3
+Tile beam  259  2
+Tile beam  260  3
+
+Tile beam  269  3
+Tile beam  270  2
+Tile beam  271  0
+Tile beam  271  1
+Tile beam  271  2
+Tile beam  271  3
+Tile beam  272  2
+Tile beam  273  3
+
+Tile beam  281  5
+Tile beam  281  6
+Tile beam  281  7
+Tile beam  281  8
+Tile beam  281  9
+Tile beam  281  10
+Tile beam  281  11
+Tile beam  281  12
+Tile beam  281  13
+Tile beam  281  14
+Tile beam  281  15
+Tile beam  281  16
+
+Dec WhiteHouse 247 5
+
+End door  258 5
 
 #     gX, gY, cW, cH,  sX, sY,  sM,  g,   bullet
-Player 2   2  64  100   5  20   20  0.75  redcapBullet
-Enemy  24  1  58  70    5  20   20  0.75
+Player 2  2  64  100   5  20   20  0.75  redcapBullet
+Enemy  25  1  58  70    5  20   20  0.75
+Enemy  45  3  58  70    5  20   20  0.75
+Enemy  136 1  58  70    5  20   20  0.75
+Enemy  144 1  58  70    5  20   20  0.75
+

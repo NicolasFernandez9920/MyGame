@@ -2,10 +2,14 @@
 
 Window  1920 1080
 
-Font    Arial      	../assets/fonts/arial.ttf
-Font    main       	../assets/fonts/Sansation.ttf
-Font    Arcade    	../assets/fonts/arcadeclassic.regular.ttf
-Font    megaman         ../assets/fonts/megaman.ttf
+Font    Arial      	  ../assets/fonts/arial.ttf
+Font    main       	  ../assets/fonts/Sansation.ttf
+Font    Arcade    	  ../assets/fonts/arcadeclassic.regular.ttf
+Font    megaman           ../assets/fonts/megaman.ttf
+Font    PressStart        ../assets/fonts/PressStart2P-vaV7.ttf
+
+Music menuTheme     ../assets/music/Map.wav
+Music missionTheme  ../assets/music/Mercury.wav
 
 # Textures
 Texture city            ../assets/textures/BKGcity.png
@@ -19,6 +23,17 @@ Texture redcap          ../assets/textures/RedCapPickUp.png
 Texture playerRedcap    ../assets/textures/DTRedCap.png
 Texture redcapBullet    ../assets/textures/redcapBullet.png
 Texture DTAnimation     ../assets/textures/DTAnimation.png
+Texture WhiteHouse      ../assets/textures/TheWhiteHouse.png
+Texture platform        ../assets/textures/platform.png
+Texture icon            ../assets/textures/enemyRedCapHead.png
+Texture spike           ../assets/textures/spike.png
+Texture spikeDown       ../assets/textures/spikeDown.png
+Texture door            ../assets/textures/end.png
+
+#
+# Sounds
+Sound pickup           ../assets/sounds/IntroJingle.wav
+Sound shoot             ../assets/sounds/slightscream-14.wav
 
 # Sprites
 Sprite background            city           0   0   2937   532

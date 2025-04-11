@@ -40,6 +40,7 @@ public:
 	void				quit();
 	void				run();
 	void				quitLevel();
+	void				reset();
 	void				backLevel();
 	sf::RenderWindow&   window();
 	sf::Vector2f		windowSize() const;

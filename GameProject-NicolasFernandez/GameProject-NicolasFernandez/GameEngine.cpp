@@ -138,6 +138,12 @@ void GameEngine::quitLevel()
 	changeScene("MENU", nullptr, true);
 }
 
+void GameEngine::reset()
+{
+	//int randomIndex = std::rand() % m_subtitles.size();
+	//m_currentSubtitle = m_subtitles[randomIndex];
+}
+
 void GameEngine::backLevel()
 {
 	changeScene("MENU", nullptr, false);

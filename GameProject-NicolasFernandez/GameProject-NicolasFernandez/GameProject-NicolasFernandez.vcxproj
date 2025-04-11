@@ -149,10 +149,12 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scene_Game.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
+    <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
@@ -164,10 +166,12 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scene_Game.h" />
     <ClInclude Include="Scene_Menu.h" />
+    <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
