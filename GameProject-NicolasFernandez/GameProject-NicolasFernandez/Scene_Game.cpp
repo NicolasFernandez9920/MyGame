@@ -319,7 +319,7 @@ void Scene_Game::checkPlayerCollision()
 
 		// Collision with door
 		// player spawn point 244, 5
-		if (_counter == 1) {
+		if (_counter >= 1) {
 			for (auto d : _entityManager.getEntities("door")) {
 
 				auto overlap = Physics::getOverlap(_player, d);

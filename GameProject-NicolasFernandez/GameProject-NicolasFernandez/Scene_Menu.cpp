@@ -142,7 +142,7 @@ void Scene_Menu::sRender()
 		continueText.setFont(Assets::getInstance().getFont("PressStart"));
 		continueText.setCharacterSize(30);
 		continueText.setFillColor(sf::Color::White);
-		continueText.setString("PRESS ANY KEY TO MAKE AMERICA GREAT AGAIN");
+		continueText.setString("PRESS ANY KEY TO MAKE GAMES GREAT AGAIN");
 		centerText(continueText);
 		continueText.setPosition(_game->window().getSize().x / 2.f,
 			_game->window().getSize().y - 100);
